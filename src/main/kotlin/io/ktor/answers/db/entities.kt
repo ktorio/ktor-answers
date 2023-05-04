@@ -79,6 +79,25 @@ class User(id: LongID) : LongEntity(id) {
         "User(name='$name', passwordHash='$passwordHash', active=$active, email='$email', createdAt=$createdAt)"
 }
 
+object TagTable : LongIdTable("tag") {
+    val name = varchar("name", 50)
+}
+
+object QuestionTags : Table("question_tag") {
+    val question = reference("question_id", QuestionTable, onDelete = CASCADE)
+    val tag = reference("tag_id", TagTable, onDelete = CASCADE)
+    override val primaryKey: PrimaryKey = PrimaryKey(question, tag)
+}
+
+class Tag(id: LongID) : LongEntity(id) {
+    companion object : LongEntityClass<Tag>(TagTable)
+
+    var name by TagTable.name
+    var questions by Question via QuestionTags
+    override fun toString(): String = "Tag(name='$name')"
+
+}
+
 class Role(id: IntID) : IntEntity(id) {
     companion object : IntEntityClass<Role>(RoleTable)
 
@@ -115,6 +134,7 @@ class Question(id: LongID) : LongEntity(id) {
     companion object : LongEntityClass<Question>(QuestionTable)
 
     var data by Content referencedOn QuestionTable.data
+    var tags by Tag via QuestionTags
     override fun toString(): String = "Question(data=$data)"
 
 }
@@ -152,7 +172,9 @@ fun main() {
             VoteTable,
             QuestionTable,
             AnswerTable,
-            CommentTable
+            CommentTable,
+            TagTable,
+            QuestionTags
         )
 
         val pasha = User.new {
@@ -193,7 +215,7 @@ private fun User.createQuestion(id: Int) {
     for (it in 1..2) {
         q.addAnswerWithComments(it, this)
     }
-    if (Random.nextBoolean()){
+    if (Random.nextBoolean()) {
         Vote.new {
             value = Random.nextBoolean()
             voter = this@createQuestion
