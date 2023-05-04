@@ -34,7 +34,14 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-kotlin-datetime:$exposedVersion")
-    runtimeOnly("com.h2database:h2:2.1.214")
+    implementation("org.liquibase:liquibase-core:4.21.1")
+    runtimeOnly("org.postgresql:postgresql:42.6.0")
+    testImplementation(kotlin("test"))
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("org.testcontainers:postgresql:1.18.0")
+    testImplementation("org.testcontainers:junit-jupiter:1.18.0")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

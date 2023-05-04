@@ -21,39 +21,39 @@ object RoleTable : IntIdTable("role") {
 }
 
 object UserRole : Table("user_role") {
-    val user = reference("user", UserTable, onDelete = ReferenceOption.CASCADE)
-    val role = reference("role", RoleTable, onDelete = ReferenceOption.CASCADE)
+    val user = reference("user", UserTable, onDelete = ReferenceOption.CASCADE).index()
+    val role = reference("role", RoleTable, onDelete = ReferenceOption.CASCADE).index()
     override val primaryKey = PrimaryKey(user, role)
 }
 
 
 object ContentTable : LongIdTable("content") {
     val text = text("text")
-    val author = reference("author_id", UserTable, onDelete = ReferenceOption.CASCADE)
-    val createdAt = datetime("created_at").clientDefault { LocalDateTime.now().toKotlinLocalDateTime() }
+    val author = reference("author_id", UserTable, onDelete = ReferenceOption.CASCADE).index()
+    val createdAt = datetime("created_at").clientDefault { LocalDateTime.now().toKotlinLocalDateTime() }.index()
 
 }
 
 object VoteTable : LongIdTable("vote") {
-    val voter = reference("voter", UserTable, onDelete = ReferenceOption.CASCADE)
-    val content = reference("content", ContentTable, onDelete = ReferenceOption.CASCADE)
+    val voter = reference("voter", UserTable, onDelete = ReferenceOption.CASCADE).index()
+    val content = reference("content", ContentTable, onDelete = ReferenceOption.CASCADE).index()
     val value = short("value")
     val createdAt = datetime("created_at").clientDefault { LocalDateTime.now().toKotlinLocalDateTime() }
 }
 
 object QuestionTable : LongIdTable("question") {
-    val data = reference("content", ContentTable, onDelete = ReferenceOption.CASCADE)
+    val data = reference("content", ContentTable, onDelete = ReferenceOption.CASCADE).index()
     val title = text("title").uniqueIndex()
 }
 
 object AnswerTable : LongIdTable("answer") {
-    val question = reference("question", QuestionTable, onDelete = ReferenceOption.CASCADE)
+    val question = reference("question", QuestionTable, onDelete = ReferenceOption.CASCADE).index()
     val data = reference("data", ContentTable, onDelete = ReferenceOption.CASCADE)
 }
 
 object CommentTable : LongIdTable("comment") {
-    val data = reference("data", ContentTable, onDelete = ReferenceOption.CASCADE)
-    val parent = reference("parent", ContentTable, onDelete = ReferenceOption.CASCADE)
+    val data = reference("data", ContentTable, onDelete = ReferenceOption.CASCADE).index()
+    val parent = reference("parent", ContentTable, onDelete = ReferenceOption.CASCADE).index()
 }
 
 
@@ -62,7 +62,7 @@ object TagTable : LongIdTable("tag") {
 }
 
 object QuestionTags : Table("question_tag") {
-    val question = reference("question_id", QuestionTable, onDelete = ReferenceOption.CASCADE)
-    val tag = reference("tag_id", TagTable, onDelete = ReferenceOption.CASCADE)
+    val question = reference("question_id", QuestionTable, onDelete = ReferenceOption.CASCADE).index()
+    val tag = reference("tag_id", TagTable, onDelete = ReferenceOption.CASCADE).index()
     override val primaryKey: PrimaryKey = PrimaryKey(question, tag)
 }
