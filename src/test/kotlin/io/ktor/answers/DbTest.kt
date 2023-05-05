@@ -1,58 +1,18 @@
 package io.ktor.answers
 
 import io.ktor.answers.db.*
-import kotlinx.coroutines.awaitAll
-import liquibase.Contexts
-import liquibase.LabelExpression
-import liquibase.Liquibase
-import liquibase.Scope
-import liquibase.command.CommandBuilder
-import liquibase.command.CommandFactory
-import liquibase.command.CommandResultsBuilder
-import liquibase.command.core.UpdateCommandStep
-import liquibase.database.DatabaseFactory
-import liquibase.database.jvm.JdbcConnection
-import liquibase.resource.ClassLoaderResourceAccessor
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.DatabaseConfig
-import org.jetbrains.exposed.sql.Schema
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.junit.jupiter.api.BeforeAll
-import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.containers.wait.strategy.WaitAllStrategy
-import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.io.File
-import java.sql.DriverManager
+import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.*
 
 
 @Testcontainers
-class DbTest {
-
-    companion object {
-        @Container
-        val postgres = PostgreSQLContainer("postgres")
-
-        @BeforeAll
-        @JvmStatic
-        fun init() {
-            with(postgres) {
-
-                val database =
-                    DatabaseFactory.getInstance().findCorrectDatabaseImplementation(JdbcConnection(DriverManager.getConnection(jdbcUrl, username, password)))
-                val liquibase = Liquibase("db/changelog/changelog.xml", ClassLoaderResourceAccessor(), database)
-                liquibase.dropAll()
-                liquibase.update(Contexts(""), LabelExpression(), true)
-                Database.connect(jdbcUrl, driverClassName, username, password)
-            }
-        }
-    }
+class DbTest : AbstractDbTest() {
 
     @Test
     fun `deactivated users should not be in the 'all users' response`() {
-
+        val current = UserRepository.allUsers().size
         transaction {
             User.new {
                 name = "pasha"
@@ -61,6 +21,20 @@ class DbTest {
                 active = false
             }
         }
-        assertEquals(0, UserRepository.allUsers().size)
+        assertEquals(current, UserRepository.allUsers().size)
+    }
+
+    @Test
+    fun `insertion of an active user increases number of users in DB by 1`() {
+        val current = UserRepository.allUsers().size
+        transaction {
+            User.new {
+                name = "pasha1"
+                email = "asm0dey@example.com1"
+                passwordHash = "***secret***"
+                active = true
+            }
+        }
+        assertEquals(current + 1, UserRepository.allUsers().size)
     }
 }
