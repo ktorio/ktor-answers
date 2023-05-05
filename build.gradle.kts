@@ -12,7 +12,7 @@ plugins {
 group = "io.ktor.answers"
 version = "0.0.1"
 application {
-    mainClass.set("io.ktor.answers.ApplicationKt")
+    mainClass.set("io.ktor.server.netty.EngineMain")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
@@ -33,6 +33,15 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-kotlin-datetime:$exposedVersion")
+    implementation("org.liquibase:liquibase-core:4.21.1")
+    runtimeOnly("org.postgresql:postgresql:42.6.0")
+    testImplementation(kotlin("test"))
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("org.testcontainers:postgresql:1.18.0")
+    testImplementation("org.testcontainers:junit-jupiter:1.18.0")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
