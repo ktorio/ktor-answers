@@ -6,11 +6,20 @@ import io.ktor.server.testing.*
 import kotlin.test.*
 import io.ktor.http.*
 import io.ktor.answers.plugins.*
+import io.ktor.server.config.*
 
-class ApplicationTest {
+class ApplicationTest : AbstractDbTest() {
     @Test
     fun testRoot() = testApplication {
+        environment {
+            config = MapApplicationConfig(
+                "database.url" to postgres.jdbcUrl,
+                "database.username" to postgres.username,
+                "database.password" to postgres.password
+            )
+        }
         application {
+            migrateDb()
             configureRouting()
         }
         client.get("/").apply {
