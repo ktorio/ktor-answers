@@ -10,4 +10,25 @@
         http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
     <include file="scripts/01-init.sql" relativeToChangelogFile="true"/>
+    <changeSet id="2" author="asm0dey">
+        <addColumn tableName="users">
+            <column name="display_name" type="varchar(80)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="location" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="about_me" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="link" type="text">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="answer">
+            <column name="accetped" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
