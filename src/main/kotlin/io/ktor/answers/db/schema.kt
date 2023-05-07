@@ -14,6 +14,10 @@ object UserTable : LongIdTable("users") {
     val active = bool("active").default(false)
     val email = text("email").uniqueIndex()
     val createdAt = datetime("created_at").clientDefault { LocalDateTime.now().toKotlinLocalDateTime() }
+    val displayName = varchar("display_name", 80).uniqueIndex()
+    val location = text("location").nullable()
+    val aboutMe = text("about_me").nullable()
+    val link = text("link").nullable()
 }
 
 object RoleTable : IntIdTable("role") {
@@ -49,6 +53,7 @@ object QuestionTable : LongIdTable("question") {
 object AnswerTable : LongIdTable("answer") {
     val question = reference("question", QuestionTable, onDelete = ReferenceOption.CASCADE).index()
     val data = reference("data", ContentTable, onDelete = ReferenceOption.CASCADE)
+    val accepted = bool("accepted").default(false)
 }
 
 object CommentTable : LongIdTable("comment") {

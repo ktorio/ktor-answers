@@ -1,5 +1,7 @@
 package io.ktor.answers.db
 
+import io.ktor.answers.db.Role.Companion.backReferencedOn
+import io.ktor.answers.db.Role.Companion.referrersOn
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.LongEntity
@@ -19,6 +21,11 @@ class User(id: LongId) : LongEntity(id) {
     var email by UserTable.email
     var createdAt by UserTable.createdAt
     var roles by Role via UserRole
+    var displayName by UserTable.displayName
+    var location by UserTable.location
+    var aboutMe by UserTable.aboutMe
+    var link by UserTable.link
+    val contentItems by Content referrersOn ContentTable.author
     override fun toString(): String =
         "User(name='$name', passwordHash='$passwordHash', active=$active, email='$email', createdAt=$createdAt)"
 }
@@ -71,6 +78,7 @@ class Question(id: LongId) : LongEntity(id) {
     var data by Content referencedOn QuestionTable.data
     var tags by Tag via QuestionTags
     var title by QuestionTable.title
+    val answers by Answer referrersOn AnswerTable.question
     override fun toString(): String = "Question(data=$data, title='$title')"
 
 }
@@ -81,6 +89,7 @@ class Answer(id: LongId) : LongEntity(id) {
 
     var data by Content referencedOn AnswerTable.data
     var question by Question referencedOn AnswerTable.question
+    var accepted by AnswerTable.accepted
     override fun toString(): String = "Answer(data=$data, question=$question)"
 
 }

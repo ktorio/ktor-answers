@@ -28,7 +28,7 @@ fun Application.migrateDb() = with(environment.config) {
     )
 }
 
-fun migrate(jdbcUrl: String, username: String, password: String, drop: Boolean = false) {
+fun migrate(jdbcUrl: String, username: String, password: String) {
     Scope.child(mapOf()) {
         val database =
             DatabaseFactory
@@ -36,9 +36,6 @@ fun migrate(jdbcUrl: String, username: String, password: String, drop: Boolean =
                 .findCorrectDatabaseImplementation(
                     JdbcConnection(DriverManager.getConnection(jdbcUrl, username, password))
                 )
-        val liquibase = Liquibase("db/changelog/changelog.xml", ClassLoaderResourceAccessor(), database)
-        if (drop)
-            liquibase.dropAll()
         CommandScope(*COMMAND_NAME).apply {
             addArgumentValue(DATABASE_ARG, database)
             addArgumentValue(CHANGELOG_FILE_ARG, "db/changelog/changelog.xml")
