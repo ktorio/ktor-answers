@@ -1,5 +1,9 @@
 # Ktor Demo Application
 
+Current database schema:
+
+![answer](https://user-images.githubusercontent.com/1297282/236692031-369df3f1-33c2-4296-83ba-4627909f1d06.png)
+
 Current data model:
 
 ![](https://kroki.io/erd/svg/eNptkbEOwiAQQPf7CuJY4uDqZlxcNerSOJztRUkoKFyrifHfhYBKjROFe--F0HrnyR2gUi0Y7Agu6P3NunaF_gzYsBoIqEOloXGETO2CAeqN1VRIECOimk6liJMALK1hMpwYpjuDxJ7P1pWZDEVxJmIiiHvLuSyH8OlANomCAXVPpR7Rwv1uczfU1j15VtbkYouMwIrjFd8jMRsrC-Nv7xeR1wxldSRVIqGQlt_O0nbd5wXkBV08zpk8GyniofFIei4mkZk8P5D8C6VgwKDe4qn8F-M7huELix-ZwA==)
