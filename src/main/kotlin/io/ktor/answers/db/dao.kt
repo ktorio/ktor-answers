@@ -1,7 +1,6 @@
 package io.ktor.answers.db
 
-import io.ktor.answers.db.Role.Companion.backReferencedOn
-import io.ktor.answers.db.Role.Companion.referrersOn
+import kotlinx.datetime.LocalDateTime
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.LongEntity
@@ -28,8 +27,22 @@ class User(id: LongId) : LongEntity(id) {
     val contentItems by Content referrersOn ContentTable.author
     override fun toString(): String =
         "User(name='$name', passwordHash='$passwordHash', active=$active, email='$email', createdAt=$createdAt)"
+
+    fun asDto(): UserDTO {
+        return UserDTO(name, active, email, createdAt, displayName, location, aboutMe, link)
+    }
 }
 
+data class UserDTO(
+    val name: String,
+    val active: Boolean,
+    val email: String,
+    val createdAt: LocalDateTime,
+    val displayName: String,
+    val location: String?,
+    val aboutMe: String?,
+    val link: String?
+)
 
 class Tag(id: LongId) : LongEntity(id) {
     companion object : LongEntityClass<Tag>(TagTable)
