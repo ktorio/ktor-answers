@@ -1,6 +1,9 @@
 package io.ktor.answers
 
 import io.ktor.answers.db.*
+import kotlinx.coroutines.test.runTest
+import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.testcontainers.junit.jupiter.Testcontainers
 import kotlin.random.Random
@@ -10,11 +13,12 @@ import kotlin.test.assertEquals
 
 @Testcontainers
 class DbTest : AbstractDbTest() {
+    private val userRepository = UserRepository()
 
     @Test
-    fun `deactivated users should not be in the 'all users' response`() {
-        val current = UserRepository.allUsers().size
-        transaction {
+    fun `deactivated users should not be in the 'all users' response`() = runTest {
+        val current = userRepository.allUsers().size
+        newSuspendedTransaction {
             User.new {
                 name = Random.nextString(7)
                 email = Random.email()
@@ -23,13 +27,14 @@ class DbTest : AbstractDbTest() {
                 displayName = Random.nextString(7)
             }
         }
-        assertEquals(current, UserRepository.allUsers().size)
+        assertEquals(current, userRepository.allUsers().size)
+        newSuspendedTransaction { UserTable.deleteAll() }
     }
 
     @Test
-    fun `insertion of an active user increases number of users in DB by 1`() {
-        val current = UserRepository.allUsers().size
-        transaction {
+    fun `insertion of an active user increases number of users in DB by 1`()  = runTest {
+        val current = userRepository.allUsers().size
+        newSuspendedTransaction {
             User.new {
                 name = Random.nextString(7)
                 email = Random.email()
@@ -38,7 +43,8 @@ class DbTest : AbstractDbTest() {
                 displayName = Random.nextString(7)
             }
         }
-        assertEquals(current + 1, UserRepository.allUsers().size)
+        assertEquals(current + 1, userRepository.allUsers().size)
+        newSuspendedTransaction { UserTable.deleteAll() }
     }
 }
 

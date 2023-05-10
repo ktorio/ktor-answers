@@ -46,6 +46,8 @@ liquibase = "org.liquibase:liquibase-core:4.21.1"
 
 postgres = "org.postgresql:postgresql:42.6.0"
 
+kotlinx-coroutines-test="org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.0"
+
 kotlin-scripting-compiler-embeddable = { group = "org.jetbrains.kotlin", name = "kotlin-scripting-compiler-embeddable", version.ref = "kotlin" }
 
 kotlin-serialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }

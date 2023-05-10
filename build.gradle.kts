@@ -35,6 +35,7 @@ dependencies {
     testImplementation(libs.ktor.server.tests.jvm)
     testImplementation(libs.testcontainers.postgres)
     testImplementation(libs.testcontainers.jupiter)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 
 tasks.test {
