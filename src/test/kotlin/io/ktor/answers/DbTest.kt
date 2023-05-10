@@ -83,6 +83,8 @@ class DbTest : AbstractDbTest() {
         val sortedByVotes = userRepository.commentsByIds(ids, sortBy = "votes")
         assertEquals("comment2", sortedByVotes[0].text)
         assertEquals("comment1", sortedByVotes[1].text)
+        assertEquals(2, sortedByVotes[0].votes)
+        assertEquals(3, sortedByVotes[1].votes)
         val sortedByCreation = userRepository.commentsByIds(ids, sortBy = "creation")
         assertEquals("comment1", sortedByCreation[0].text)
         assertEquals("comment2", sortedByCreation[1].text)

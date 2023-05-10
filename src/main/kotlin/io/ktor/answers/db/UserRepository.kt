@@ -7,8 +7,6 @@ import org.jetbrains.exposed.sql.SortOrder.ASC
 import org.jetbrains.exposed.sql.kotlin.datetime.date
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import kotlinx.datetime.LocalDateTime
-import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalDateColumnType
-import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalDateTimeColumnType
 
 class UserRepository {
     private val defaultQueryParams = CommonQueryParams(0, 20, null, null)
@@ -113,14 +111,15 @@ class UserRepository {
         sortBy: String = "creation",
         order: SortOrder = ASC
     ): List<CommentDto> = suspendTransaction {
-        val text = ContentTable.text.min()
-        val createdAt = ContentTable.createdAt.min()
-        val author = ContentTable.author.min()
+        val text = ContentTable.text.min().alias("comment_text")
+        val createdAt = ContentTable.createdAt.min().alias("comment_created")
+        val author = ContentTable.author.min().alias("author")
+        val votes = Coalesce(VoteTable.value.sum(), shortLiteral(0)).alias("votes")
         CommentTable
             .join(ContentTable, JoinType.INNER, CommentTable.data, ContentTable.id)
             .join(UserTable, JoinType.INNER, ContentTable.author, UserTable.id)
             .join(VoteTable, JoinType.INNER, VoteTable.content, ContentTable.id)
-            .slice(CommentTable.id, text, createdAt, author)
+            .slice(CommentTable.id, text, createdAt, author, votes)
             .select {
                 val inIds = UserTable.id inList ids
                 val active = UserTable.active eq true
@@ -138,7 +137,7 @@ class UserRepository {
             .orderBy(
                 when (sortBy) {
                     "creation" -> createdAt
-                    "votes" -> Sum(VoteTable.value, LongColumnType())
+                    "votes" -> votes
                     else -> error("Unsupported sort predicate: $sortBy")
                 }, order
             )
@@ -147,14 +146,21 @@ class UserRepository {
                     it[CommentTable.id].value,
                     it[text]!!,
                     it[createdAt]!!,
-                    it[author]!!.value
+                    it[author]!!.value,
+                    it[votes].toInt()
                 )
             }
 
     }
 }
 
-data class CommentDto(val value: Long, val text: String, val createdAt: LocalDateTime, val authorId: Long)
+data class CommentDto(
+    val value: Long,
+    val text: String,
+    val createdAt: LocalDateTime,
+    val authorId: Long,
+    val votes: Int
+)
 
 
 suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
