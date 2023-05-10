@@ -2,7 +2,6 @@ package io.ktor.answers
 
 import io.ktor.answers.plugins.*
 import io.ktor.server.application.*
-import liquibase.Liquibase
 import liquibase.Scope
 import liquibase.command.CommandScope
 import liquibase.command.core.UpdateCommandStep.CHANGELOG_FILE_ARG
@@ -10,14 +9,23 @@ import liquibase.command.core.UpdateCommandStep.COMMAND_NAME
 import liquibase.command.core.helpers.DbUrlConnectionCommandStep.DATABASE_ARG
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
-import liquibase.resource.ClassLoaderResourceAccessor
+import org.jetbrains.exposed.sql.Database
 import java.sql.DriverManager
 
 
 fun Application.module() {
     migrateDb()
+    connectToDb()
     configureSerialization()
     configureRouting()
+}
+
+fun Application.connectToDb() = with(environment.config){
+    Database.connect(
+        property("database.url").getString(),
+        user = property("database.username").getString(),
+        password = property("database.password").getString()
+    )
 }
 
 fun Application.migrateDb() = with(environment.config) {

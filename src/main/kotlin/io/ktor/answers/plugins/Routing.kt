@@ -1,10 +1,14 @@
 package io.ktor.answers.plugins
 
+import io.ktor.answers.db.*
 import io.ktor.server.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.http.*
 import io.ktor.server.application.*
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toLocalDate
+import org.jetbrains.exposed.sql.SortOrder
 
 fun Application.configureRouting() {
     install(StatusPages) {
@@ -16,5 +20,37 @@ fun Application.configureRouting() {
         get("/") {
             call.respondText("Hello World!")
         }
+        route("/users") {
+            get {
+                val queryParams = call.request.queryParameters
+                queryParams.parsed()
+                val sortBy = queryParams["sortBy"] ?: "name"
+                val order = (queryParams["order"] ?: "asc").toSortOrder()
+
+                call.respond(UserRepository().allUsers(queryParams.parsed(), sortBy, order))
+            }
+        }
     }
 }
+
+private fun String.toSortOrder(): SortOrder = when (this) {
+    "asc" -> SortOrder.ASC
+    "desc" -> SortOrder.DESC
+    else -> error("Unsupported sort order: $this")
+}
+
+private fun Parameters.parsed(): CommonQueryParams {
+    val page = this["page"]?.toInt()
+    val pageSize = this["pagesize"]?.toInt() ?: 20
+    val fromDate = this["fromdate"]?.toLocalDate()
+    val toDate = this["todate"]?.toLocalDate()
+    return CommonQueryParams(page, pageSize, fromDate, toDate)
+}
+
+data class CommonQueryParams(
+    val page: Int?,
+    val pageSize: Int,
+    val fromDate: LocalDate?,
+    val toDate: LocalDate?,
+)
+
