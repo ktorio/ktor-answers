@@ -2,10 +2,13 @@ package io.ktor.answers
 
 import io.ktor.answers.db.*
 import kotlinx.coroutines.test.runTest
+import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.testcontainers.junit.jupiter.Testcontainers
 import kotlin.random.Random
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -14,6 +17,9 @@ import kotlin.test.assertEquals
 class DbTest : AbstractDbTest() {
     private val userRepository = UserRepository()
 
+    @AfterTest
+    fun cleanup() = runTest { suspendTransaction { UserTable.deleteAll() } }
+
     @Test
     fun `deactivated users should not be in the 'all users' response`() = runTest {
         val current = userRepository.allUsers().size
@@ -21,7 +27,6 @@ class DbTest : AbstractDbTest() {
             createRandomUser(active = false)
         }
         assertEquals(current, userRepository.allUsers().size)
-        newSuspendedTransaction { UserTable.deleteAll() }
     }
 
     @Test
@@ -31,7 +36,6 @@ class DbTest : AbstractDbTest() {
             createRandomUser()
         }
         assertEquals(current + 1, userRepository.allUsers().size)
-        newSuspendedTransaction { UserTable.deleteAll() }
     }
 
     @Test
@@ -78,7 +82,7 @@ class DbTest : AbstractDbTest() {
             }
         }
         val ids = suspendTransaction {
-            User.all().map { it.id.value }.toList()
+            UserTable.slice(UserTable.id).selectAll().map { it[UserTable.id].value }
         }
         val sortedByVotes = userRepository.commentsByIds(ids, sortBy = "votes")
         assertEquals("comment2", sortedByVotes[0].text)
@@ -88,7 +92,6 @@ class DbTest : AbstractDbTest() {
         val sortedByCreation = userRepository.commentsByIds(ids, sortBy = "creation")
         assertEquals("comment1", sortedByCreation[0].text)
         assertEquals("comment2", sortedByCreation[1].text)
-        suspendTransaction { UserTable.deleteAll() }
     }
 
     @Test
@@ -125,7 +128,7 @@ class DbTest : AbstractDbTest() {
             voters[0].downvote(question3.data)
         }
         val ids = suspendTransaction {
-            User.all().map { it.id.value }.toList()
+            UserTable.slice(UserTable.id).selectAll().map { it[UserTable.id].value }
         }
         val sortedByVotes = userRepository.questionsByIds(ids, sortBy = "votes")
         assertEquals("3question", sortedByVotes[0].title)
@@ -142,31 +145,64 @@ class DbTest : AbstractDbTest() {
         assertEquals("1question", sortedByTitle[0].title)
         assertEquals("2question", sortedByTitle[1].title)
         assertEquals("3question", sortedByTitle[2].title)
-        suspendTransaction { UserTable.deleteAll() }
     }
 
-    private fun createRandomUser(active: Boolean = true) = User.new {
-        name = Random.nextString(7)
-        email = Random.email()
-        passwordHash = "***secret***"
-        this.active = active
-        displayName = Random.nextString(7)
-    }
-
-    private fun User.upvote(content: Content) {
-        Vote.new {
-            voter = this@upvote
-            value = 1
-            this.content = content
+    @Test
+    fun `answer sorting`() = runTest {
+        suspendTransaction {
+            val author = createRandomUser()
+            val voters = (1..3).map { createRandomUser() }
+            val question = Question.new {
+                title = "question"
+                data = Content.new {
+                    this.author = author
+                    text = "question"
+                }
+            }
+            val answer2 = Answer.new {
+                this.question = question
+                data = Content.new {
+                    this.author = voters[0]
+                    text = "answer2"
+                }
+                accepted = false
+            }
+            val answer1 = Answer.new {
+                this.question = question
+                data = Content.new {
+                    this.author = voters[0]
+                    text = "answer1"
+                }
+                accepted = false
+            }
+            val answer3 = Answer.new {
+                this.question = question
+                data = Content.new {
+                    this.author = voters[0]
+                    text = "answer3"
+                }
+                accepted = false
+            }
+            // chrono order: 2 → 1 → 3
+            // vote order: 3 → 2 → 1
+            voters.forEach { it.upvote(answer1.data) }
+            voters[0].upvote(answer2.data)
+            voters[0].downvote(answer3.data)
         }
-    }
-
-    private fun User.downvote(content: Content) {
-        Vote.new {
-            voter = this@downvote
-            value = -1
-            this.content = content
+        val ids = suspendTransaction {
+            UserTable.slice(UserTable.id).selectAll().map { it[UserTable.id].value }
         }
+        val sortedByVotes = userRepository.answersByIds(ids, sortBy = "votes")
+        assertEquals("answer3", sortedByVotes[0].text)
+        assertEquals("answer2", sortedByVotes[1].text)
+        assertEquals("answer1", sortedByVotes[2].text)
+        assertEquals(-1, sortedByVotes[0].votes)
+        assertEquals(1, sortedByVotes[1].votes)
+        assertEquals(3, sortedByVotes[2].votes)
+        val sortedByCreation = userRepository.answersByIds(ids, sortBy = "creation")
+        assertEquals("answer2", sortedByCreation[0].text)
+        assertEquals("answer1", sortedByCreation[1].text)
+        assertEquals("answer3", sortedByCreation[2].text)
     }
 }
 
@@ -176,3 +212,27 @@ fun Random.Default.nextString(length: Int) = (1..length)
     .joinToString("")
 
 fun Random.Default.email() = nextString(7) + '@' + nextString(5) + '.' + nextString(3)
+
+private fun createRandomUser(active: Boolean = true) = User.new {
+    name = Random.nextString(7)
+    email = Random.email()
+    passwordHash = "***secret***"
+    this.active = active
+    displayName = Random.nextString(7)
+}
+
+private fun User.upvote(content: Content) {
+    Vote.new {
+        voter = this@upvote
+        value = 1
+        this.content = content
+    }
+}
+
+private fun User.downvote(content: Content) {
+    Vote.new {
+        voter = this@downvote
+        value = -1
+        this.content = content
+    }
+}

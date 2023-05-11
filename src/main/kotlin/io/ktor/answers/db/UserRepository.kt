@@ -156,6 +156,45 @@ class UserRepository {
             }
 
     }
+    suspend fun answersByIds(
+        ids: List<Long>,
+        queryParams: CommonQueryParams = defaultQueryParams,
+        sortBy: String = "creation",
+        order: SortOrder = ASC
+    ): List<AnswerDto> = suspendTransaction {
+        val text = ContentTable.text.min().alias("question_text")
+        val createdAt = ContentTable.createdAt.min().alias("question_created")
+        val author = ContentTable.author.min().alias("author")
+        val votes = Coalesce(VoteTable.value.sum(), shortLiteral(0)).alias("votes")
+        AnswerTable
+            .join(ContentTable, JoinType.INNER, AnswerTable.data, ContentTable.id)
+            .join(UserTable, JoinType.INNER, ContentTable.author, UserTable.id)
+            .join(VoteTable, JoinType.INNER, VoteTable.content, ContentTable.id)
+            .slice(AnswerTable.id, text, createdAt, author, votes)
+            .select { contentFilters(ids, queryParams.fromDate, queryParams.toDate) }
+            .groupBy(AnswerTable.id)
+            .limit(
+                queryParams.pageSize,
+                if (queryParams.page != null) queryParams.pageSize.toLong() * (queryParams.page - 1) else 0
+            )
+            .orderBy(
+                when (sortBy) {
+                    "creation" -> createdAt
+                    "votes" -> votes
+                    else -> error("Unsupported sort predicate: $sortBy")
+                }, order
+            )
+            .map {
+                AnswerDto(
+                    it[AnswerTable.id].value,
+                    it[text]!!,
+                    it[createdAt]!!,
+                    it[author]!!.value,
+                    it[votes].toInt()
+                )
+            }
+
+    }
 
     private fun contentFilters(
         userIds: List<Long>,
@@ -171,6 +210,14 @@ class UserRepository {
         return listOfNotNull(inIds, active, from, to).compoundAnd()
     }
 }
+
+data class AnswerDto(
+    val id: Long,
+    val text: String,
+    val createdAt: LocalDateTime,
+    val authorId: Long,
+    val votes: Int
+)
 
 data class QuestionDto(
     val id: Long,
