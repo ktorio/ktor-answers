@@ -31,4 +31,7 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet id="03-fix-accepted-answer-column-name" author="asm0dey">
+        <renameColumn tableName="answer" oldColumnName="accetped" newColumnName="accepted"/>
+    </changeSet>
 </databaseChangeLog>
