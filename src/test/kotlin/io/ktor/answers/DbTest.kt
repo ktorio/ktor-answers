@@ -2,7 +2,6 @@ package io.ktor.answers
 
 import io.ktor.answers.db.*
 import kotlinx.coroutines.test.runTest
-import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -45,21 +44,21 @@ class DbTest : AbstractDbTest() {
                 createRandomUser()
             }
             val author = createRandomUser()
-            val question = Question.new {
+            val question = QuestionDAO.new {
                 data = Content.new {
                     text = Random.nextString(50)
                     this.author = author
                     title = "question"
                 }
             }
-            val comment1 = Comment.new {
+            val comment1 = CommentDAO.new {
                 data = Content.new {
                     text = "comment1"
                     this.author = voters[0]
                 }
                 parent = question.data
             }
-            val comment2 = Comment.new {
+            val comment2 = CommentDAO.new {
                 data = Content.new {
                     text = "comment2"
                     this.author = voters[1]
@@ -98,21 +97,21 @@ class DbTest : AbstractDbTest() {
     fun `question sorting`() = runTest {
         suspendTransaction {
             val author = createRandomUser()
-            val question2 = Question.new {
+            val question2 = QuestionDAO.new {
                 data = Content.new {
                     text = Random.nextString(50)
                     this.author = author
                     title = "2question"
                 }
             }
-            val question1 = Question.new {
+            val question1 = QuestionDAO.new {
                 data = Content.new {
                     text = Random.nextString(50)
                     this.author = author
                     title = "1question"
                 }
             }
-            val question3 = Question.new {
+            val question3 = QuestionDAO.new {
                 data = Content.new {
                     text = Random.nextString(50)
                     this.author = author
@@ -152,14 +151,14 @@ class DbTest : AbstractDbTest() {
         suspendTransaction {
             val author = createRandomUser()
             val voters = (1..3).map { createRandomUser() }
-            val question = Question.new {
+            val question = QuestionDAO.new {
                 title = "question"
                 data = Content.new {
                     this.author = author
                     text = "question"
                 }
             }
-            val answer2 = Answer.new {
+            val answer2 = AnswerDAO.new {
                 this.question = question
                 data = Content.new {
                     this.author = voters[0]
@@ -167,7 +166,7 @@ class DbTest : AbstractDbTest() {
                 }
                 accepted = false
             }
-            val answer1 = Answer.new {
+            val answer1 = AnswerDAO.new {
                 this.question = question
                 data = Content.new {
                     this.author = voters[0]
@@ -175,7 +174,7 @@ class DbTest : AbstractDbTest() {
                 }
                 accepted = false
             }
-            val answer3 = Answer.new {
+            val answer3 = AnswerDAO.new {
                 this.question = question
                 data = Content.new {
                     this.author = voters[0]
@@ -213,7 +212,7 @@ fun Random.Default.nextString(length: Int) = (1..length)
 
 fun Random.Default.email() = nextString(7) + '@' + nextString(5) + '.' + nextString(3)
 
-private fun createRandomUser(active: Boolean = true) = User.new {
+private fun createRandomUser(active: Boolean = true) = UserDAO.new {
     name = Random.nextString(7)
     email = Random.email()
     passwordHash = "***secret***"
@@ -221,7 +220,7 @@ private fun createRandomUser(active: Boolean = true) = User.new {
     displayName = Random.nextString(7)
 }
 
-private fun User.upvote(content: Content) {
+private fun UserDAO.upvote(content: Content) {
     Vote.new {
         voter = this@upvote
         value = 1
@@ -229,7 +228,7 @@ private fun User.upvote(content: Content) {
     }
 }
 
-private fun User.downvote(content: Content) {
+private fun UserDAO.downvote(content: Content) {
     Vote.new {
         voter = this@downvote
         value = -1

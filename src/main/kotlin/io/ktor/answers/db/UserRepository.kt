@@ -19,8 +19,8 @@ class UserRepository {
         parsed: CommonQueryParams = defaultQueryParams,
         sortBy: String = "name",
         order: SortOrder = ASC
-    ): List<User> = suspendTransaction {
-        User
+    ): List<UserDAO> = suspendTransaction {
+        UserDAO
             .find {
                 val active = UserTable.active eq true
                 val from = if (parsed.fromDate != null) (UserTable.createdAt.date() greaterEq parsed.fromDate) else null
@@ -38,8 +38,8 @@ class UserRepository {
             .toList()
     }
 
-    suspend fun userById(id: Long): User? = suspendTransaction {
-        User
+    suspend fun userById(id: Long): UserDAO? = suspendTransaction {
+        UserDAO
             .find { (UserTable.id eq id) and (UserTable.active eq true) }
             .limit(1).firstOrNull()
     }
@@ -49,8 +49,8 @@ class UserRepository {
         queryParams: CommonQueryParams = defaultQueryParams,
         sortBy: String = "name",
         order: SortOrder = ASC
-    ): List<User> = suspendTransaction {
-        User
+    ): List<UserDAO> = suspendTransaction {
+        UserDAO
             .find {
                 val active = UserTable.active eq true
                 val inIds = UserTable.id inList ids

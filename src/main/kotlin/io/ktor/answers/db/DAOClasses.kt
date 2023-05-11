@@ -10,8 +10,8 @@ import org.jetbrains.exposed.dao.id.EntityID
 typealias LongId = EntityID<Long>
 typealias IntId = EntityID<Int>
 
-class User(id: LongId) : LongEntity(id) {
-    companion object : LongEntityClass<User>(UserTable)
+class UserDAO(id: LongId) : LongEntity(id) {
+    companion object : LongEntityClass<UserDAO>(UserTable)
 
     var name by UserTable.name
     var passwordHash by UserTable.passwordHash
@@ -29,7 +29,7 @@ class User(id: LongId) : LongEntity(id) {
         "User(name='$name', passwordHash='$passwordHash', active=$active, email='$email', createdAt=$createdAt)"
 }
 
-fun User.toDTO() = UserDTO(
+fun UserDAO.toDTO() = UserDTO(
     id.value, name, active, email, createdAt, displayName, location, aboutMe, link
 )
 
@@ -37,27 +37,24 @@ class Tag(id: LongId) : LongEntity(id) {
     companion object : LongEntityClass<Tag>(TagTable)
 
     var name by TagTable.name
-    var questions by Question via QuestionTags
+    var questions by QuestionDAO via QuestionTags
     override fun toString(): String = "Tag(name='$name')"
-
 }
 
 class Role(id: IntId) : IntEntity(id) {
     companion object : IntEntityClass<Role>(RoleTable)
 
     var name by RoleTable.name
-    var users by User via UserRole
+    var users by UserDAO via UserRole
     override fun toString(): String = "Role(name='$name')"
 }
 
 class Content(id: LongId) : LongEntity(id) {
-
     companion object : LongEntityClass<Content>(ContentTable)
 
     var text by ContentTable.text
-    var author by User referencedOn ContentTable.author
+    var author by UserDAO referencedOn ContentTable.author
     var createdAt by ContentTable.createdAt
-
 
     override fun toString(): String = "Content(text='$text', author=$author, createdAt=$createdAt)"
 }
@@ -65,27 +62,26 @@ class Content(id: LongId) : LongEntity(id) {
 class Vote(id: LongId) : LongEntity(id) {
     companion object : LongEntityClass<Vote>(VoteTable)
 
-    var voter by User referencedOn VoteTable.voter
+    var voter by UserDAO referencedOn VoteTable.voter
     var value by VoteTable.value
     var createdAt by VoteTable.createdAt
     var content by Content referencedOn VoteTable.content
     override fun toString(): String = "Vote(voter=$voter, content=$content, value=$value, createdAt=$createdAt)"
-
 }
 
 
-class Question(id: LongId) : LongEntity(id) {
-    companion object : LongEntityClass<Question>(QuestionTable)
+class QuestionDAO(id: LongId) : LongEntity(id) {
+    companion object : LongEntityClass<QuestionDAO>(QuestionTable)
 
     var data by Content referencedOn QuestionTable.data
     // var votes by Vote referencedOn VoteTable.value
     var tags by Tag via QuestionTags
     var title by QuestionTable.title
-    val answers by Answer referrersOn AnswerTable.question
+    val answers by AnswerDAO referrersOn AnswerTable.question
     override fun toString(): String = "Question(data=$data, title='$title')"
 }
 
-fun Question.toDTO() = QuestionDto(
+fun QuestionDAO.toDTO() = QuestionDto(
     id = id.value,
     title = title,
     text = data.text,
@@ -94,23 +90,20 @@ fun Question.toDTO() = QuestionDto(
     votes = 0// TODO: votes.value.toInt()
 )
 
-class Answer(id: LongId) : LongEntity(id) {
-    companion object : LongEntityClass<Answer>(AnswerTable)
+class AnswerDAO(id: LongId) : LongEntity(id) {
+    companion object : LongEntityClass<AnswerDAO>(AnswerTable)
 
     var data by Content referencedOn AnswerTable.data
-    var question by Question referencedOn AnswerTable.question
+    var question by QuestionDAO referencedOn AnswerTable.question
     var accepted by AnswerTable.accepted
     override fun toString(): String = "Answer(data=$data, question=$question)"
-
 }
 
 
-class Comment(id: LongId) : LongEntity(id) {
-    companion object : LongEntityClass<Comment>(CommentTable)
+class CommentDAO(id: LongId) : LongEntity(id) {
+    companion object : LongEntityClass<CommentDAO>(CommentTable)
 
     var data by Content referencedOn CommentTable.data
     var parent by Content referencedOn CommentTable.parent
     override fun toString(): String = "Comment(data=$data, parent=$parent)"
-
 }
-

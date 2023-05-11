@@ -26,7 +26,7 @@ fun Application.configureRouting() {
                 val sortBy = queryParams["sortBy"] ?: "name"
                 val order = (queryParams["order"] ?: "asc").toSortOrder()
 
-                call.respond(UserRepository().allUsers(queryParams.parsed(), sortBy, order).map(User::toDTO))
+                call.respond(UserRepository().allUsers(queryParams.parsed(), sortBy, order).map(UserDAO::toDTO))
             }
             route(Regex("(?<ids>\\d+(,\\d+){0,1000})")) {
                 get {
@@ -34,7 +34,7 @@ fun Application.configureRouting() {
                     val queryParams = call.request.queryParameters
                     val sortBy = queryParams["sortBy"] ?: "name"
                     val order = (queryParams["order"] ?: "asc").toSortOrder()
-                    call.respond(UserRepository().usersByIds(ids, queryParams.parsed(), sortBy, order).map { User::toDTO })
+                    call.respond(UserRepository().usersByIds(ids, queryParams.parsed(), sortBy, order).map { UserDAO::toDTO })
                 }
                 get("/comments"){
                     val ids = call.parameters["ids"]!!.split(',').map(String::toLong)
