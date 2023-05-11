@@ -7,7 +7,7 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserDTO(
+data class User(
     val id: Long,
     val name: String,
     val active: Boolean = true,
@@ -20,7 +20,7 @@ data class UserDTO(
 )
 
 @Serializable
-data class AnswerDto(
+data class Answer(
     val id: Long,
     val text: String,
     val createdAt: LocalDateTime,
@@ -29,7 +29,7 @@ data class AnswerDto(
 )
 
 @Serializable
-data class QuestionDto(
+data class Question(
     val id: Long,
     val title: String,
     val text: String,
@@ -39,7 +39,7 @@ data class QuestionDto(
 )
 
 @Serializable
-data class CommentDto(
+data class Comment(
     val value: Long,
     val text: String,
     val createdAt: LocalDateTime,
