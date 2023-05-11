@@ -1,6 +1,6 @@
 package io.ktor.answers.db
 
-import kotlinx.datetime.LocalDateTime
+import io.ktor.answers.model.*
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.LongEntity
@@ -27,21 +27,10 @@ class User(id: LongId) : LongEntity(id) {
     val contentItems by Content referrersOn ContentTable.author
     override fun toString(): String =
         "User(name='$name', passwordHash='$passwordHash', active=$active, email='$email', createdAt=$createdAt)"
-
-    fun asDto(): UserDTO {
-        return UserDTO(name, active, email, createdAt, displayName, location, aboutMe, link)
-    }
 }
 
-data class UserDTO(
-    val name: String,
-    val active: Boolean,
-    val email: String,
-    val createdAt: LocalDateTime,
-    val displayName: String,
-    val location: String?,
-    val aboutMe: String?,
-    val link: String?
+fun User.toDTO() = UserDTO(
+    id.value, name, active, email, createdAt, displayName, location, aboutMe, link
 )
 
 class Tag(id: LongId) : LongEntity(id) {
@@ -89,13 +78,21 @@ class Question(id: LongId) : LongEntity(id) {
     companion object : LongEntityClass<Question>(QuestionTable)
 
     var data by Content referencedOn QuestionTable.data
+    // var votes by Vote referencedOn VoteTable.value
     var tags by Tag via QuestionTags
     var title by QuestionTable.title
     val answers by Answer referrersOn AnswerTable.question
     override fun toString(): String = "Question(data=$data, title='$title')"
-
 }
 
+fun Question.toDTO() = QuestionDto(
+    id = id.value,
+    title = title,
+    text = data.text,
+    createdAt = data.createdAt,
+    authorId = data.author.id.value,
+    votes = 0// TODO: votes.value.toInt()
+)
 
 class Answer(id: LongId) : LongEntity(id) {
     companion object : LongEntityClass<Answer>(AnswerTable)

@@ -1,5 +1,6 @@
 package io.ktor.answers.db
 
+import io.ktor.answers.model.*
 import io.ktor.answers.plugins.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.LocalDate
@@ -7,7 +8,6 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SortOrder.ASC
 import org.jetbrains.exposed.sql.kotlin.datetime.date
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import kotlinx.datetime.LocalDateTime
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
@@ -210,32 +210,6 @@ class UserRepository {
         return listOfNotNull(inIds, active, from, to).compoundAnd()
     }
 }
-
-data class AnswerDto(
-    val id: Long,
-    val text: String,
-    val createdAt: LocalDateTime,
-    val authorId: Long,
-    val votes: Int
-)
-
-data class QuestionDto(
-    val id: Long,
-    val title: String,
-    val text: String,
-    val createdAt: LocalDateTime,
-    val authorId: Long,
-    val votes: Int
-)
-
-data class CommentDto(
-    val value: Long,
-    val text: String,
-    val createdAt: LocalDateTime,
-    val authorId: Long,
-    val votes: Int
-)
-
 
 suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
