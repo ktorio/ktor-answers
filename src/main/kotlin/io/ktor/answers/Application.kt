@@ -1,6 +1,7 @@
 package io.ktor.answers
 
 import io.ktor.answers.plugins.*
+import io.ktor.answers.routing.*
 import io.ktor.server.application.*
 import liquibase.Scope
 import liquibase.command.CommandScope

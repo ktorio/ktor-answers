@@ -5,7 +5,7 @@ import io.ktor.client.statement.*
 import io.ktor.server.testing.*
 import kotlin.test.*
 import io.ktor.http.*
-import io.ktor.answers.plugins.*
+import io.ktor.answers.routing.*
 import io.ktor.server.config.*
 
 class ApplicationTest : AbstractDbTest() {
