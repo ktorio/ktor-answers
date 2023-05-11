@@ -41,7 +41,15 @@ fun Application.configureRouting() {
                     val queryParams = call.request.queryParameters
                     val sortBy = queryParams["sortBy"] ?: "creation"
                     val order = (queryParams["order"] ?: "asc").toSortOrder()
-                    call.respond(UserRepository().usersByIds(ids, queryParams.parsed(), sortBy, order))
+                    call.respond(UserRepository().commentsByIds(ids, queryParams.parsed(), sortBy, order))
+                }
+                get("/quesions"){
+                    val ids = call.parameters["ids"]!!.split(',').map(String::toLong)
+                    val queryParams = call.request.queryParameters
+                    val sortBy = queryParams["sortBy"] ?: "creation"
+                    val order = (queryParams["order"] ?: "asc").toSortOrder()
+                    call.respond(UserRepository().questionsByIds(ids, queryParams.parsed(), sortBy, order))
+
                 }
             }
         }
