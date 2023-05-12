@@ -21,7 +21,7 @@ val defaultQueryParams = CommonQueryParams(0, 20, null, null, null, ASC)
 class UserRepository {
     suspend fun allUsers(
         parsed: CommonQueryParams = defaultQueryParams,
-    ): List<UserDAO> = suspendTransaction {
+    ): List<User> = suspendTransaction {
         UserDAO
             .find {
                 val active = UserTable.active eq true
@@ -37,7 +37,7 @@ class UserRepository {
                     else -> error("Unsupported sort column: ${parsed.sortBy}")
                 } to parsed.order
             )
-            .toList()
+            .map(UserDAO::toDTO)
     }
 
     suspend fun userById(id: Long): UserDAO? = suspendTransaction {
@@ -49,7 +49,7 @@ class UserRepository {
     suspend fun usersByIds(
         ids: List<Long>,
         queryParams: CommonQueryParams = defaultQueryParams,
-    ): List<UserDAO> = suspendTransaction {
+    ): List<User> = suspendTransaction {
         UserDAO
             .find {
                 val active = UserTable.active eq true
@@ -70,7 +70,7 @@ class UserRepository {
                     else -> error("Unsupported sort column: ${queryParams.sortBy}")
                 } to queryParams.order
             )
-            .toList()
+            .map(UserDAO::toDTO)
 
     }
 
