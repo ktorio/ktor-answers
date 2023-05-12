@@ -83,12 +83,12 @@ class DbTest : AbstractDbTest() {
         val ids = suspendTransaction {
             UserTable.slice(UserTable.id).selectAll().map { it[UserTable.id].value }
         }
-        val sortedByVotes = userRepository.commentsByIds(ids, sortBy = "votes")
+        val sortedByVotes = userRepository.commentsByIds(ids, defaultQueryParams.copy(sortBy = "votes"))
         assertEquals("comment2", sortedByVotes[0].text)
         assertEquals("comment1", sortedByVotes[1].text)
         assertEquals(2, sortedByVotes[0].votes)
         assertEquals(3, sortedByVotes[1].votes)
-        val sortedByCreation = userRepository.commentsByIds(ids, sortBy = "creation")
+        val sortedByCreation = userRepository.commentsByIds(ids, defaultQueryParams.copy(sortBy = "creation"))
         assertEquals("comment1", sortedByCreation[0].text)
         assertEquals("comment2", sortedByCreation[1].text)
     }
@@ -129,18 +129,18 @@ class DbTest : AbstractDbTest() {
         val ids = suspendTransaction {
             UserTable.slice(UserTable.id).selectAll().map { it[UserTable.id].value }
         }
-        val sortedByVotes = userRepository.questionsByIds(ids, sortBy = "votes")
+        val sortedByVotes = userRepository.questionsByIds(ids, defaultQueryParams.copy(sortBy = "votes"))
         assertEquals("3question", sortedByVotes[0].title)
         assertEquals("2question", sortedByVotes[1].title)
         assertEquals("1question", sortedByVotes[2].title)
         assertEquals(-1, sortedByVotes[0].votes)
         assertEquals(1, sortedByVotes[1].votes)
         assertEquals(3, sortedByVotes[2].votes)
-        val sortedByCreation = userRepository.questionsByIds(ids, sortBy = "creation")
+        val sortedByCreation = userRepository.questionsByIds(ids, defaultQueryParams.copy(sortBy = "creation"))
         assertEquals("2question", sortedByCreation[0].title)
         assertEquals("1question", sortedByCreation[1].title)
         assertEquals("3question", sortedByCreation[2].title)
-        val sortedByTitle = userRepository.questionsByIds(ids, sortBy = "title")
+        val sortedByTitle = userRepository.questionsByIds(ids, defaultQueryParams.copy(sortBy = "title"))
         assertEquals("1question", sortedByTitle[0].title)
         assertEquals("2question", sortedByTitle[1].title)
         assertEquals("3question", sortedByTitle[2].title)
@@ -191,14 +191,14 @@ class DbTest : AbstractDbTest() {
         val ids = suspendTransaction {
             UserTable.slice(UserTable.id).selectAll().map { it[UserTable.id].value }
         }
-        val sortedByVotes = userRepository.answersByIds(ids, sortBy = "votes")
+        val sortedByVotes = userRepository.answersByIds(ids, defaultQueryParams.copy(sortBy = "votes"))
         assertEquals("answer3", sortedByVotes[0].text)
         assertEquals("answer2", sortedByVotes[1].text)
         assertEquals("answer1", sortedByVotes[2].text)
         assertEquals(-1, sortedByVotes[0].votes)
         assertEquals(1, sortedByVotes[1].votes)
         assertEquals(3, sortedByVotes[2].votes)
-        val sortedByCreation = userRepository.answersByIds(ids, sortBy = "creation")
+        val sortedByCreation = userRepository.answersByIds(ids, defaultQueryParams.copy(sortBy = "creation"))
         assertEquals("answer2", sortedByCreation[0].text)
         assertEquals("answer1", sortedByCreation[1].text)
         assertEquals("answer3", sortedByCreation[2].text)

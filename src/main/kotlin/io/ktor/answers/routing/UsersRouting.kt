@@ -9,41 +9,31 @@ fun Routing.usersRouting(userRepository: UserRepository) {
     route("/users") {
         get {
             val queryParams = call.request.queryParameters
-            val sortBy = queryParams["sortBy"] ?: "name"
-            val order = (queryParams["order"] ?: "asc").toSortOrder()
-
-            call.respond(userRepository.allUsers(queryParams.parsed(), sortBy, order).map(UserDAO::toDTO))
+            call.respond(userRepository.allUsers(queryParams.parsed(defaultSortField = "name")).map(UserDAO::toDTO))
         }
         route(Regex("(?<ids>\\d+(,\\d+){0,1000})")) {
             get {
                 val ids = call.parameters["ids"]!!.split(',').map(String::toLong)
                 val queryParams = call.request.queryParameters
-                val sortBy = queryParams["sortBy"] ?: "name"
-                val order = (queryParams["order"] ?: "asc").toSortOrder()
                 call.respond(
-                    userRepository.usersByIds(ids, queryParams.parsed(), sortBy, order).map { UserDAO::toDTO })
+                    userRepository.usersByIds(ids, queryParams.parsed(defaultSortField = "name"))
+                        .map { UserDAO::toDTO })
             }
             get("/comments") {
                 val ids = call.parameters["ids"]!!.split(',').map(String::toLong)
                 val queryParams = call.request.queryParameters
-                val sortBy = queryParams["sortBy"] ?: "creation"
-                val order = (queryParams["order"] ?: "asc").toSortOrder()
-                call.respond(userRepository.commentsByIds(ids, queryParams.parsed(), sortBy, order))
+                call.respond(userRepository.commentsByIds(ids, queryParams.parsed(defaultSortField = "creation")))
             }
             get("/quesions") {
                 val ids = call.parameters["ids"]!!.split(',').map(String::toLong)
                 val queryParams = call.request.queryParameters
-                val sortBy = queryParams["sortBy"] ?: "creation"
-                val order = (queryParams["order"] ?: "asc").toSortOrder()
-                call.respond(userRepository.questionsByIds(ids, queryParams.parsed(), sortBy, order))
+                call.respond(userRepository.questionsByIds(ids, queryParams.parsed(defaultSortField = "creation")))
 
             }
             get("/answers") {
                 val ids = call.parameters["ids"]!!.split(',').map(String::toLong)
                 val queryParams = call.request.queryParameters
-                val sortBy = queryParams["sortBy"] ?: "creation"
-                val order = (queryParams["order"] ?: "asc").toSortOrder()
-                call.respond(userRepository.answersByIds(ids, queryParams.parsed(), sortBy, order))
+                call.respond(userRepository.answersByIds(ids, queryParams.parsed(defaultSortField = "creation")))
             }
         }
     }

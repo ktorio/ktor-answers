@@ -6,7 +6,9 @@ import io.ktor.answers.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.LocalDate
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.JoinType.INNER
 import org.jetbrains.exposed.sql.SortOrder.ASC
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.coalesce
 import org.jetbrains.exposed.sql.kotlin.datetime.date
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -14,12 +16,11 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 
+val defaultQueryParams = CommonQueryParams(0, 20, null, null, null, ASC)
+
 class UserRepository {
-    private val defaultQueryParams = CommonQueryParams(0, 20, null, null)
     suspend fun allUsers(
         parsed: CommonQueryParams = defaultQueryParams,
-        sortBy: String = "name",
-        order: SortOrder = ASC
     ): List<UserDAO> = suspendTransaction {
         UserDAO
             .find {
@@ -30,11 +31,11 @@ class UserRepository {
             }
             .limit(parsed.pageSize, if (parsed.page != null) parsed.pageSize.toLong() * (parsed.page - 1) else 0)
             .orderBy(
-                when (sortBy) {
+                when (parsed.sortBy ?: "name") {
                     "name" -> UserTable.name
                     "creation" -> UserTable.createdAt
-                    else -> error("Unsupported sort column: $sortBy")
-                } to order
+                    else -> error("Unsupported sort column: ${parsed.sortBy}")
+                } to parsed.order
             )
             .toList()
     }
@@ -48,8 +49,6 @@ class UserRepository {
     suspend fun usersByIds(
         ids: List<Long>,
         queryParams: CommonQueryParams = defaultQueryParams,
-        sortBy: String = "name",
-        order: SortOrder = ASC
     ): List<UserDAO> = suspendTransaction {
         UserDAO
             .find {
@@ -65,11 +64,11 @@ class UserRepository {
                 if (queryParams.page != null) queryParams.pageSize.toLong() * (queryParams.page - 1) else 0
             )
             .orderBy(
-                when (sortBy) {
+                when (queryParams.sortBy ?: "name") {
                     "name" -> UserTable.name
                     "creation" -> UserTable.createdAt
-                    else -> error("Unsupported sort column: $sortBy")
-                } to order
+                    else -> error("Unsupported sort column: ${queryParams.sortBy}")
+                } to queryParams.order
             )
             .toList()
 
@@ -78,17 +77,15 @@ class UserRepository {
     suspend fun commentsByIds(
         ids: List<Long>,
         queryParams: CommonQueryParams = defaultQueryParams,
-        sortBy: String = "creation",
-        order: SortOrder = ASC
     ): List<Comment> = suspendTransaction {
         val text = ContentTable.text.min().alias("comment_text")
         val createdAt = ContentTable.createdAt.min().alias("comment_created")
         val author = ContentTable.author.min().alias("author")
-        val votes = Coalesce(VoteTable.value.sum(), shortLiteral(0)).alias("votes")
+        val votes = coalesce(VoteTable.value.sum(), shortLiteral(0)).alias("votes")
         CommentTable
-            .join(ContentTable, JoinType.INNER, CommentTable.data, ContentTable.id)
-            .join(UserTable, JoinType.INNER, ContentTable.author, UserTable.id)
-            .join(VoteTable, JoinType.INNER, VoteTable.content, ContentTable.id)
+            .join(ContentTable, INNER, CommentTable.data, ContentTable.id)
+            .join(UserTable, INNER, ContentTable.author, UserTable.id)
+            .join(VoteTable, INNER, VoteTable.content, ContentTable.id)
             .slice(CommentTable.id, text, createdAt, author, votes)
             .select { contentFilters(ids, queryParams.fromDate, queryParams.toDate) }
             .groupBy(CommentTable.id)
@@ -97,11 +94,11 @@ class UserRepository {
                 if (queryParams.page != null) queryParams.pageSize.toLong() * (queryParams.page - 1) else 0
             )
             .orderBy(
-                when (sortBy) {
+                when (queryParams.sortBy ?: "creation") {
                     "creation" -> createdAt
                     "votes" -> votes
-                    else -> error("Unsupported sort predicate: $sortBy")
-                }, order
+                    else -> error("Unsupported sort predicate: ${queryParams.sortBy}")
+                }, queryParams.order
             )
             .map {
                 Comment(
@@ -118,8 +115,6 @@ class UserRepository {
     suspend fun questionsByIds(
         ids: List<Long>,
         queryParams: CommonQueryParams = defaultQueryParams,
-        sortBy: String = "creation",
-        order: SortOrder = ASC
     ): List<Question> = suspendTransaction {
         val text = ContentTable.text.min().alias("question_text")
         val createdAt = ContentTable.createdAt.min().alias("question_created")
@@ -127,9 +122,9 @@ class UserRepository {
         val votes = Coalesce(VoteTable.value.sum(), shortLiteral(0)).alias("votes")
         val questionTitle = QuestionTable.title.min().alias("question_title")
         QuestionTable
-            .join(ContentTable, JoinType.INNER, QuestionTable.data, ContentTable.id)
-            .join(UserTable, JoinType.INNER, ContentTable.author, UserTable.id)
-            .join(VoteTable, JoinType.INNER, VoteTable.content, ContentTable.id)
+            .join(ContentTable, INNER, QuestionTable.data, ContentTable.id)
+            .join(UserTable, INNER, ContentTable.author, UserTable.id)
+            .join(VoteTable, INNER, VoteTable.content, ContentTable.id)
             .slice(QuestionTable.id, questionTitle, text, createdAt, author, votes)
             .select { contentFilters(ids, queryParams.fromDate, queryParams.toDate) }
             .groupBy(QuestionTable.id)
@@ -138,12 +133,12 @@ class UserRepository {
                 if (queryParams.page != null) queryParams.pageSize.toLong() * (queryParams.page - 1) else 0
             )
             .orderBy(
-                when (sortBy) {
+                when (queryParams.sortBy ?: "title") {
                     "creation" -> createdAt
                     "votes" -> votes
                     "title" -> questionTitle
-                    else -> error("Unsupported sort predicate: $sortBy")
-                }, order
+                    else -> error("Unsupported sort predicate: ${queryParams.sortBy}")
+                }, queryParams.order
             )
             .map {
                 Question(
@@ -157,20 +152,19 @@ class UserRepository {
             }
 
     }
+
     suspend fun answersByIds(
         ids: List<Long>,
         queryParams: CommonQueryParams = defaultQueryParams,
-        sortBy: String = "creation",
-        order: SortOrder = ASC
     ): List<Answer> = suspendTransaction {
         val text = ContentTable.text.min().alias("question_text")
         val createdAt = ContentTable.createdAt.min().alias("question_created")
         val author = ContentTable.author.min().alias("author")
         val votes = Coalesce(VoteTable.value.sum(), shortLiteral(0)).alias("votes")
         AnswerTable
-            .join(ContentTable, JoinType.INNER, AnswerTable.data, ContentTable.id)
-            .join(UserTable, JoinType.INNER, ContentTable.author, UserTable.id)
-            .join(VoteTable, JoinType.INNER, VoteTable.content, ContentTable.id)
+            .join(ContentTable, INNER, AnswerTable.data, ContentTable.id)
+            .join(UserTable, INNER, ContentTable.author, UserTable.id)
+            .join(VoteTable, INNER, VoteTable.content, ContentTable.id)
             .slice(AnswerTable.id, text, createdAt, author, votes)
             .select { contentFilters(ids, queryParams.fromDate, queryParams.toDate) }
             .groupBy(AnswerTable.id)
@@ -179,11 +173,11 @@ class UserRepository {
                 if (queryParams.page != null) queryParams.pageSize.toLong() * (queryParams.page - 1) else 0
             )
             .orderBy(
-                when (sortBy) {
+                when (queryParams.sortBy ?: "creation") {
                     "creation" -> createdAt
                     "votes" -> votes
-                    else -> error("Unsupported sort predicate: $sortBy")
-                }, order
+                    else -> error("Unsupported sort predicate: ${queryParams.sortBy}")
+                }, queryParams.order
             )
             .map {
                 Answer(
