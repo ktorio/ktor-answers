@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.LocalDate
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.JoinType.INNER
+import org.jetbrains.exposed.sql.JoinType.LEFT
 import org.jetbrains.exposed.sql.SortOrder.ASC
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.coalesce
 import org.jetbrains.exposed.sql.kotlin.datetime.date
@@ -85,7 +86,7 @@ class UserRepository {
         CommentTable
             .join(ContentTable, INNER, CommentTable.data, ContentTable.id)
             .join(UserTable, INNER, ContentTable.author, UserTable.id)
-            .join(VoteTable, INNER, VoteTable.content, ContentTable.id)
+            .join(VoteTable, LEFT, VoteTable.content, ContentTable.id)
             .slice(CommentTable.id, text, createdAt, author, votes)
             .select { contentFilters(ids, queryParams.fromDate, queryParams.toDate) }
             .groupBy(CommentTable.id)
@@ -124,7 +125,7 @@ class UserRepository {
         QuestionTable
             .join(ContentTable, INNER, QuestionTable.data, ContentTable.id)
             .join(UserTable, INNER, ContentTable.author, UserTable.id)
-            .join(VoteTable, INNER, VoteTable.content, ContentTable.id)
+            .join(VoteTable, LEFT, VoteTable.content, ContentTable.id)
             .slice(QuestionTable.id, questionTitle, text, createdAt, author, votes)
             .select { contentFilters(ids, queryParams.fromDate, queryParams.toDate) }
             .groupBy(QuestionTable.id)
@@ -164,7 +165,7 @@ class UserRepository {
         AnswerTable
             .join(ContentTable, INNER, AnswerTable.data, ContentTable.id)
             .join(UserTable, INNER, ContentTable.author, UserTable.id)
-            .join(VoteTable, INNER, VoteTable.content, ContentTable.id)
+            .join(VoteTable, LEFT, VoteTable.content, ContentTable.id)
             .slice(AnswerTable.id, text, createdAt, author, votes)
             .select { contentFilters(ids, queryParams.fromDate, queryParams.toDate) }
             .groupBy(AnswerTable.id)
