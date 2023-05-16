@@ -14,23 +14,7 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
-fun runInTestEnvironment(test: suspend (HttpClient) -> Unit) = testApplication {
-    environment {
-        config = MapApplicationConfig(
-            "database.url" to AbstractDbTest.postgres.jdbcUrl,
-            "database.username" to AbstractDbTest.postgres.username,
-            "database.password" to AbstractDbTest.postgres.password
-        )
-    }
-    application {
-        migrateDb()
-        configureSerialization()
-        configureRouting()
-    }
-    test(client)
-}
-
-class UsersTest {
+class UsersTest : AbstractDbTest() {
     suspend fun HttpClient.getAsJsonPath(url: String): DocumentContext {
         val response = this.get(url) {
             accept(ContentType.Application.Json)
@@ -77,5 +61,21 @@ class UsersTest {
         (1..3).forEach {
             assertContains(result, it)
         }
+    }
+
+    private fun runInTestEnvironment(test: suspend (HttpClient) -> Unit) = testApplication {
+        environment {
+            config = MapApplicationConfig(
+                "database.url" to postgres.jdbcUrl,
+                "database.username" to postgres.username,
+                "database.password" to postgres.password
+            )
+        }
+        application {
+            migrateDb()
+            configureSerialization()
+            configureRouting()
+        }
+        test(client)
     }
 }
