@@ -37,4 +37,22 @@
     <changeSet id="04" author="garthgilmourni">
         <sqlFile path="db/changelog/scripts/04-populate.sql" />
     </changeSet>
+    <changeSet id="05-fix-ids-in-sample-answers" author="garthgilmourni">
+        <update tableName="answer">
+            <column name="data" value="10002" />
+            <where>id = 1002</where>
+        </update>
+        <update tableName="answer">
+            <column name="data" value="10003" />
+            <where>id = 1003</where>
+        </update>
+        <update tableName="answer">
+            <column name="data" value="10004" />
+            <where>id = 1004</where>
+        </update>
+        <update tableName="answer">
+            <column name="data" value="10005" />
+            <where>id = 1005</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
