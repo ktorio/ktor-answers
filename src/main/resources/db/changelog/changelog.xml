@@ -34,4 +34,7 @@
     <changeSet id="03-fix-accepted-answer-column-name" author="asm0dey">
         <renameColumn tableName="answer" oldColumnName="accetped" newColumnName="accepted"/>
     </changeSet>
+    <changeSet id="04" author="garthgilmourni">
+        <sqlFile path="db/changelog/scripts/04-populate.sql" />
+    </changeSet>
 </databaseChangeLog>
