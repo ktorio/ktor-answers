@@ -36,6 +36,7 @@ dependencies {
     testImplementation(libs.testcontainers.postgres)
     testImplementation(libs.testcontainers.jupiter)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.jsonpath)
 }
 
 tasks.test {

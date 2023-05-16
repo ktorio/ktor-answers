@@ -59,3 +59,5 @@ ktor-server-tests-jvm = { group = "io.ktor", name = "ktor-server-tests-jvm", ver
 testcontainers-postgres = { group = "org.testcontainers", name = "postgresql", version.ref = "testcontainers" }
 
 testcontainers-jupiter = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "testcontainers" }
+
+jsonpath = "com.jayway.jsonpath:json-path:2.8.0"
