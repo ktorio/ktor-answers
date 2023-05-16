@@ -24,7 +24,7 @@ fun Routing.usersRouting(userRepository: UserRepository) {
                 val queryParams = call.request.queryParameters
                 call.respond(userRepository.commentsByIds(ids, queryParams.parsed(defaultSortField = "creation")))
             }
-            get("/quesions") {
+            get("/questions") {
                 val ids = call.parameters["ids"]!!.split(',').map(String::toLong)
                 val queryParams = call.request.queryParameters
                 call.respond(userRepository.questionsByIds(ids, queryParams.parsed(defaultSortField = "creation")))
