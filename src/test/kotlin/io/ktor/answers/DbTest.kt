@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import org.testcontainers.junit.jupiter.Testcontainers
 import kotlin.random.Random
 import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -16,8 +17,11 @@ import kotlin.test.assertEquals
 class DbTest : AbstractDbTest() {
     private val userRepository = UserRepository()
 
+    @BeforeTest
+    fun startup() = clearDatabaseContents()
+
     @AfterTest
-    fun cleanup() = runTest { suspendTransaction { UserTable.deleteAll() } }
+    fun cleanup() = clearDatabaseContents()
 
     @Test
     fun `deactivated users should not be in the 'all users' response`() = runTest {
@@ -234,4 +238,7 @@ private fun UserDAO.downvote(content: Content) {
         value = -1
         this.content = content
     }
+}
+private fun clearDatabaseContents() {
+    runTest { suspendTransaction { UserTable.deleteAll() } }
 }
