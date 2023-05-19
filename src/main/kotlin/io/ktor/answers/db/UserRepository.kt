@@ -77,7 +77,7 @@ class UserRepository {
     suspend fun commentsByIds(
         ids: List<Long>,
         queryParams: CommonQueryParams = defaultQueryParams,
-    ): List<Comment> = suspendTransaction {
+    ): List<CommentDTO> = suspendTransaction {
         val text = ContentTable.text.min().alias("comment_text")
         val createdAt = ContentTable.createdAt.min().alias("comment_created")
         val author = ContentTable.author.min().alias("author")
@@ -101,7 +101,7 @@ class UserRepository {
                 }, queryParams.order
             )
             .map {
-                Comment(
+                CommentDTO(
                     it[CommentTable.id].value,
                     it[text]!!,
                     it[createdAt]!!,
@@ -115,7 +115,7 @@ class UserRepository {
     suspend fun questionsByIds(
         ids: List<Long>,
         queryParams: CommonQueryParams = defaultQueryParams,
-    ): List<Question> = suspendTransaction {
+    ): List<QuestionDTO> = suspendTransaction {
         val text = ContentTable.text.min().alias("question_text")
         val createdAt = ContentTable.createdAt.min().alias("question_created")
         val author = ContentTable.author.min().alias("author")
@@ -141,7 +141,7 @@ class UserRepository {
                 }, queryParams.order
             )
             .map {
-                Question(
+                QuestionDTO(
                     it[QuestionTable.id].value,
                     it[questionTitle]!!,
                     it[text]!!,
@@ -156,7 +156,7 @@ class UserRepository {
     suspend fun answersByIds(
         ids: List<Long>,
         queryParams: CommonQueryParams = defaultQueryParams,
-    ): List<Answer> = suspendTransaction {
+    ): List<AnswerDTO> = suspendTransaction {
         val text = ContentTable.text.min().alias("question_text")
         val createdAt = ContentTable.createdAt.min().alias("question_created")
         val author = ContentTable.author.min().alias("author")
@@ -180,7 +180,7 @@ class UserRepository {
                 }, queryParams.order
             )
             .map {
-                Answer(
+                AnswerDTO(
                     it[AnswerTable.id].value,
                     it[text]!!,
                     it[createdAt]!!,

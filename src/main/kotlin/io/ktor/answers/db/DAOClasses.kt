@@ -29,7 +29,7 @@ class UserDAO(id: LongId) : LongEntity(id) {
         "User(name='$name', passwordHash='$passwordHash', active=$active, email='$email', createdAt=$createdAt)"
 }
 
-fun UserDAO.toDTO() = User(
+fun UserDAO.toDTO() = UserDTO(
     id.value, name, active, email, createdAt, displayName, location, aboutMe, link
 )
 
@@ -81,7 +81,7 @@ class QuestionDAO(id: LongId) : LongEntity(id) {
     override fun toString(): String = "Question(data=$data, title='$title')"
 }
 
-fun QuestionDAO.toDTO() = Question(
+fun QuestionDAO.toDTO() = QuestionDTO(
     id = id.value,
     title = title,
     text = data.text,
