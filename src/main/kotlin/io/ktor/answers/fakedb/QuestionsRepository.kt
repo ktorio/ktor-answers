@@ -31,6 +31,14 @@ class QuestionsRepository {
         return questions
     }
 
+    fun getQuestionById(id: Int): Question? {
+        return questions.find { it.postId == id }
+    }
+
+    fun deleteQuestionById(id: Int): Boolean {
+        return questions.removeIf { it.postId == id }
+    }
+
     fun getUsers(): List<User> {
         return questions
             .flatMap { question ->
