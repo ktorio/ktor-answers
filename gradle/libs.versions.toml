@@ -22,6 +22,8 @@ ktor-bom = { group = "io.ktor", name = "ktor-bom", version.ref = "ktor" }
 
 ktor-server-core-jvm = { group = "io.ktor", name = "ktor-server-core-jvm", version.ref = "ktor" }
 
+ktor-server-cors-jvm = { group = "io.ktor", name = "ktor-server-cors-jvm", version.ref = "ktor" }
+
 ktor-server-content-negotiation-jvm = { group = "io.ktor", name = "ktor-server-content-negotiation-jvm", version.ref = "ktor" }
 
 ktor-serialization-kotlinx-json-jvm = { group = "io.ktor", name = "ktor-serialization-kotlinx-json-jvm", version.ref = "ktor" }
