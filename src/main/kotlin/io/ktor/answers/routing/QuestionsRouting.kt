@@ -18,6 +18,11 @@ object QuestionsPath {
 }
 
 @OptIn(KtorExperimentalLocationsAPI::class)
+@Location("/users2")
+class UsersPath
+
+
+@OptIn(KtorExperimentalLocationsAPI::class)
 fun Routing.questionsRouting(questionsRepository: QuestionsRepository) {
     get<QuestionsPath> {
         call.respond(questionsRepository.getQuestions())
@@ -51,7 +56,7 @@ fun Routing.questionsRouting(questionsRepository: QuestionsRepository) {
         }
     }
 
-    get("/users2") {
+    get<UsersPath> {
         call.respond(questionsRepository.getUsers())
     }
 }
