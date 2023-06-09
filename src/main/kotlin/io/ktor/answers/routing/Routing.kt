@@ -4,13 +4,11 @@ import io.ktor.answers.db.*
 import io.ktor.answers.fakedb.*
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.locations.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-@OptIn(KtorExperimentalLocationsAPI::class)
 fun Application.configureRouting() {
     install(CORS) {
         anyHost()
@@ -18,7 +16,6 @@ fun Application.configureRouting() {
         allowMethod(HttpMethod.Options)
         allowHeader(HttpHeaders.ContentType)
     }
-    install(Locations)
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             call.respondText(text = "500: $cause", status = HttpStatusCode.InternalServerError)

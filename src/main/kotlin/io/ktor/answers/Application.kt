@@ -16,8 +16,8 @@ import java.sql.DriverManager
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 fun Application.module() {
-    migrateDb()
-    connectToDb()
+//    migrateDb()
+//    connectToDb()
     configureSerialization()
     configureRouting()
 }
