@@ -1,7 +1,7 @@
 package io.ktor.answers.routing
 
-import io.ktor.answers.fakedb.*
-import io.ktor.answers.fakedb.model.*
+import io.ktor.answers.db.*
+import io.ktor.answers.db.fake.model.*
 import io.ktor.http.*
 import io.ktor.resources.*
 import io.ktor.server.application.*
@@ -20,7 +20,7 @@ class QuestionsResource {
 @Resource("/users2")
 class UsersResource
 
-fun Routing.questionsRouting(questionsRepository: QuestionsRepository) {
+fun Routing.questionsRouting(questionsRepository: QuestionRepository) {
     get<QuestionsResource> {
         call.respond(questionsRepository.getQuestions())
     }

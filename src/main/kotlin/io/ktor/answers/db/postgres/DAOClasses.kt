@@ -1,4 +1,4 @@
-package io.ktor.answers.db
+package io.ktor.answers.db.postgres
 
 import io.ktor.answers.model.*
 import org.jetbrains.exposed.dao.IntEntity

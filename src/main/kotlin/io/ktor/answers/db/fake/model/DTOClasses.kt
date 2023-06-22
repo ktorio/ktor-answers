@@ -1,7 +1,6 @@
-package io.ktor.answers.fakedb.model
+package io.ktor.answers.db.fake.model
 
 import kotlinx.datetime.LocalDateTime
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 enum class PostType {

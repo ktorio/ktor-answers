@@ -1,4 +1,4 @@
-package io.ktor.answers.db
+package io.ktor.answers.db.postgres
 
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.jetbrains.exposed.dao.id.IntIdTable

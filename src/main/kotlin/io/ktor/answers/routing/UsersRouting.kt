@@ -1,6 +1,6 @@
 package io.ktor.answers.routing
 
-import io.ktor.answers.db.*
+import io.ktor.answers.db.postgres.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*

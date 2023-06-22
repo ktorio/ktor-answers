@@ -1,6 +1,7 @@
-package io.ktor.answers.fakedb
+package io.ktor.answers.db.fake
 
-import io.ktor.answers.fakedb.model.*
+import io.ktor.answers.db.*
+import io.ktor.answers.db.fake.model.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -11,7 +12,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.util.*
 
-class QuestionsRepository {
+class FakeQuestionRepository : QuestionRepository {
     private val questions: MutableList<Question> =
         Collections.synchronizedList(mutableListOf())
 
@@ -27,19 +28,19 @@ class QuestionsRepository {
         questions.addAll(fakeData.questions)
     }
 
-    fun getQuestions(): List<Question> {
+    override fun getQuestions(): List<Question> {
         return questions
     }
 
-    fun getQuestionById(id: Int): Question? {
+    override fun getQuestionById(id: Int): Question? {
         return questions.find { it.postId == id }
     }
 
-    fun deleteQuestionById(id: Int): Boolean {
+    override fun deleteQuestionById(id: Int): Boolean {
         return questions.removeIf { it.postId == id }
     }
 
-    fun getUsers(): List<User> {
+    override fun getUsers(): List<User> {
         return questions
             .flatMap { question ->
                 question.answers.map { it.owner } + question.owner
@@ -47,7 +48,7 @@ class QuestionsRepository {
             .distinct()
     }
 
-    fun addQuestion(newQuestionData: QuestionData): Question? {
+    override fun addQuestion(newQuestionData: QuestionData): Question? {
         val maxId = questions.maxOf { it.postId }
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val question = Question(

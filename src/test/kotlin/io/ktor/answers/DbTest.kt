@@ -1,6 +1,6 @@
 package io.ktor.answers
 
-import io.ktor.answers.db.*
+import io.ktor.answers.db.postgres.*
 import kotlinx.coroutines.test.runTest
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.selectAll
