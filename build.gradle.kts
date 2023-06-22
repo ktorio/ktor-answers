@@ -25,6 +25,7 @@ dependencies {
     implementation(libs.ktor.server.host.common.jvm)
     implementation(libs.ktor.server.status.pages.jvm)
     implementation(libs.ktor.server.netty.jvm)
+    implementation(libs.ktor.server.resources)
     implementation(libs.logback.classic)
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)

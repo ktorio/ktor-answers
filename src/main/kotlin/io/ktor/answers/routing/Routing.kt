@@ -3,6 +3,7 @@ package io.ktor.answers.routing
 import io.ktor.answers.db.*
 import io.ktor.answers.fakedb.*
 import io.ktor.http.*
+import io.ktor.server.resources.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.statuspages.*
@@ -16,6 +17,7 @@ fun Application.configureRouting() {
         allowMethod(HttpMethod.Options)
         allowHeader(HttpHeaders.ContentType)
     }
+    install(Resources)
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             call.respondText(text = "500: $cause", status = HttpStatusCode.InternalServerError)
