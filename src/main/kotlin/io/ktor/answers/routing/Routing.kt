@@ -29,7 +29,8 @@ fun Application.configureRouting() {
         }
         val userRepository = UserRepository() // TODO DI
         usersRouting(userRepository)
-        val questionsRepository = FakeQuestionRepository()
+        //val questionsRepository = FakeQuestionRepository()
+        val questionsRepository = PostgresQuestionRepository()
         questionsRouting(questionsRepository)
     }
 }

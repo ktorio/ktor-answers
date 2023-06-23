@@ -28,19 +28,19 @@ class FakeQuestionRepository : QuestionRepository {
         questions.addAll(fakeData.questions)
     }
 
-    override fun getQuestions(): List<Question> {
+    override suspend fun getQuestions(): List<Question> {
         return questions
     }
 
-    override fun getQuestionById(id: Int): Question? {
+    override suspend fun getQuestionById(id: Int): Question? {
         return questions.find { it.postId == id }
     }
 
-    override fun deleteQuestionById(id: Int): Boolean {
+    override suspend fun deleteQuestionById(id: Int): Boolean {
         return questions.removeIf { it.postId == id }
     }
 
-    override fun getUsers(): List<User> {
+     fun getUsers(): List<User> {
         return questions
             .flatMap { question ->
                 question.answers.map { it.owner } + question.owner
@@ -48,7 +48,7 @@ class FakeQuestionRepository : QuestionRepository {
             .distinct()
     }
 
-    override fun addQuestion(newQuestionData: QuestionData): Question? {
+    override suspend fun addQuestion(newQuestionData: QuestionData): Question? {
         val maxId = questions.maxOf { it.postId }
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val question = Question(

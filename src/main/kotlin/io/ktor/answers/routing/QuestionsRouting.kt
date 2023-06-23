@@ -54,6 +54,7 @@ fun Routing.questionsRouting(questionsRepository: QuestionRepository) {
     }
 
     get<UsersResource> {
-        call.respond(questionsRepository.getUsers())
+        //call.respond(questionsRepository.getUsers())
+        call.respond(HttpStatusCode.NotFound)
     }
 }
