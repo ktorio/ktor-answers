@@ -40,14 +40,6 @@ class FakeQuestionRepository : QuestionRepository {
         return questions.removeIf { it.postId == id }
     }
 
-     fun getUsers(): List<User> {
-        return questions
-            .flatMap { question ->
-                question.answers.map { it.owner } + question.owner
-            }
-            .distinct()
-    }
-
     override suspend fun addQuestion(newQuestionData: QuestionData): Question? {
         val maxId = questions.maxOf { it.postId }
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
