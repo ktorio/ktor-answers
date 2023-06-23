@@ -1,6 +1,6 @@
 package io.ktor.answers.db.fake
 
-import io.ktor.answers.db.fake.model.*
+import io.ktor.answers.model.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import java.io.File

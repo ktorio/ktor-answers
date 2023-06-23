@@ -1,6 +1,6 @@
 package io.ktor.answers.db
 
-import io.ktor.answers.db.fake.model.*
+import io.ktor.answers.model.*
 
 interface QuestionRepository {
     suspend fun getQuestions(): List<Question>

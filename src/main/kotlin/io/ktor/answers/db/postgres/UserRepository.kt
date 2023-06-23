@@ -1,6 +1,7 @@
 package io.ktor.answers.db.postgres
 
 import io.ktor.answers.model.*
+import io.ktor.answers.model.old.*
 import io.ktor.answers.plugins.*
 import io.ktor.answers.routing.*
 import kotlinx.coroutines.Dispatchers

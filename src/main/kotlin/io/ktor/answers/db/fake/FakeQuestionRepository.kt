@@ -1,7 +1,7 @@
 package io.ktor.answers.db.fake
 
 import io.ktor.answers.db.*
-import io.ktor.answers.db.fake.model.*
+import io.ktor.answers.model.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime

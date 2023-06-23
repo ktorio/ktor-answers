@@ -1,6 +1,7 @@
 package io.ktor.answers.db.postgres
 
-import io.ktor.answers.model.*
+//import io.ktor.answers.model.*
+//import io.ktor.answers.model.old.*
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.LongEntity
@@ -29,9 +30,9 @@ class UserDAO(id: LongId) : LongEntity(id) {
         "User(name='$name', passwordHash='$passwordHash', active=$active, email='$email', createdAt=$createdAt)"
 }
 
-fun UserDAO.toDTO() = UserDTO(
-    id.value, name, active, email, createdAt, displayName, location, aboutMe, link
-)
+//fun UserDAO.toDTO() = UserDTO(
+//    id.value, name, active, email, createdAt, displayName, location, aboutMe, link
+//)
 
 class Tag(id: LongId) : LongEntity(id) {
     companion object : LongEntityClass<Tag>(TagTable)
@@ -81,14 +82,14 @@ class QuestionDAO(id: LongId) : LongEntity(id) {
     override fun toString(): String = "Question(data=$data, title='$title')"
 }
 
-fun QuestionDAO.toDTO() = QuestionDTO(
-    id = id.value,
-    title = title,
-    text = data.text,
-    createdAt = data.createdAt,
-    authorId = data.author.id.value,
-    votes = 0// TODO: votes.value.toInt()
-)
+//fun QuestionDAO.toDTO() = QuestionDTO(
+//    id = id.value,
+//    title = title,
+//    text = data.text,
+//    createdAt = data.createdAt,
+//    authorId = data.author.id.value,
+//    votes = 0// TODO: votes.value.toInt()
+//)
 
 class AnswerDAO(id: LongId) : LongEntity(id) {
     companion object : LongEntityClass<AnswerDAO>(AnswerTable)

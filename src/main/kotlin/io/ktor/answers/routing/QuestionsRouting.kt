@@ -1,7 +1,7 @@
 package io.ktor.answers.routing
 
 import io.ktor.answers.db.*
-import io.ktor.answers.db.fake.model.*
+import io.ktor.answers.model.*
 import io.ktor.http.*
 import io.ktor.resources.*
 import io.ktor.server.application.*

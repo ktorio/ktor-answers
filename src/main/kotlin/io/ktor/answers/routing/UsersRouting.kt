@@ -9,15 +9,15 @@ fun Routing.usersRouting(userRepository: UserRepository) {
     route("/users") {
         get {
             val queryParams = call.request.queryParameters
-            call.respond(userRepository.allUsers(queryParams.parsed(defaultSortField = "name")).map(UserDAO::toDTO))
+            val users = userRepository.allUsers(queryParams.parsed(defaultSortField = "name"))
+            call.respond(users.map(::daoToDto))
         }
         route(Regex("(?<ids>\\d+(,\\d+){0,1000})")) {
             get {
                 val ids = call.parameters["ids"]!!.split(',').map(String::toLong)
                 val queryParams = call.request.queryParameters
-                call.respond(
-                    userRepository.usersByIds(ids, queryParams.parsed(defaultSortField = "name"))
-                        .map { UserDAO::toDTO })
+                val users = userRepository.usersByIds(ids, queryParams.parsed(defaultSortField = "name"))
+                call.respond(users.map(::daoToDto))
             }
             get("/comments") {
                 val ids = call.parameters["ids"]!!.split(',').map(String::toLong)
