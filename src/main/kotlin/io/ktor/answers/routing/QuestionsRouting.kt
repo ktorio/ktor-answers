@@ -11,14 +11,11 @@ import io.ktor.server.routing.*
 import io.ktor.server.resources.*
 import io.ktor.server.resources.post
 
-@Resource("/questions2")
+@Resource("/questions")
 class QuestionsResource {
     @Resource("/{id}")
     class Id(val path: QuestionsResource = QuestionsResource(), val id: Int)
 }
-
-@Resource("/users2")
-class UsersResource
 
 fun Routing.questionsRouting(questionsRepository: QuestionRepository) {
     get<QuestionsResource> {
@@ -51,10 +48,5 @@ fun Routing.questionsRouting(questionsRepository: QuestionRepository) {
         } else {
             call.respond(HttpStatusCode.NotFound)
         }
-    }
-
-    get<UsersResource> {
-        //call.respond(questionsRepository.getUsers())
-        call.respond(HttpStatusCode.NotFound)
     }
 }
