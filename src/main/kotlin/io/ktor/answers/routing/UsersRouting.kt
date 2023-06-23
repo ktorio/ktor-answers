@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Routing.usersRouting(userRepository: UserRepository) {
+fun Routing.usersRouting(userRepository: PostgresUserRepository) {
     route("/users") {
         get {
             val queryParams = call.request.queryParameters

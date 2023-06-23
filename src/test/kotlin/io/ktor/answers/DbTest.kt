@@ -15,7 +15,7 @@ import kotlin.test.assertEquals
 
 @Testcontainers
 class DbTest : AbstractDbTest() {
-    private val userRepository = UserRepository()
+    private val userRepository = PostgresUserRepository()
 
     @BeforeTest
     fun startup() = clearDatabaseContents()

@@ -19,7 +19,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 
 val defaultQueryParams = CommonQueryParams(0, 20, null, null, null, ASC)
 
-class UserRepository {
+class PostgresUserRepository {
     suspend fun allUsers(
         parsed: CommonQueryParams = defaultQueryParams,
     ): List<UserDAO> = suspendTransaction {

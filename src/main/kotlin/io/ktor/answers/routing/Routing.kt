@@ -1,6 +1,5 @@
 package io.ktor.answers.routing
 
-import io.ktor.answers.db.fake.*
 import io.ktor.answers.db.postgres.*
 import io.ktor.http.*
 import io.ktor.server.resources.*
@@ -27,7 +26,7 @@ fun Application.configureRouting() {
         get("/") {
             call.respondText("Hello World!")
         }
-        val userRepository = UserRepository() // TODO DI
+        val userRepository = PostgresUserRepository() // TODO DI
         usersRouting(userRepository)
         //val questionsRepository = FakeQuestionRepository()
         val questionsRepository = PostgresQuestionRepository()
