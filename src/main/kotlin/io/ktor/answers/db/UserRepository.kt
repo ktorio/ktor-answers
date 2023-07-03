@@ -1,7 +1,6 @@
 package io.ktor.answers.db
 
 import io.ktor.answers.model.*
-import io.ktor.answers.plugins.*
 import io.ktor.answers.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.LocalDate
@@ -10,12 +9,12 @@ import org.jetbrains.exposed.sql.JoinType.INNER
 import org.jetbrains.exposed.sql.JoinType.LEFT
 import org.jetbrains.exposed.sql.SortOrder.ASC
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.coalesce
-import org.jetbrains.exposed.sql.kotlin.datetime.date
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
+import org.jetbrains.exposed.sql.kotlin.datetime.date
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
 val defaultQueryParams = CommonQueryParams(0, 20, null, null, null, ASC)
 
@@ -28,7 +27,7 @@ class UserRepository {
                 val active = UserTable.active eq true
                 val from = if (parsed.fromDate != null) (UserTable.createdAt.date() greaterEq parsed.fromDate) else null
                 val to = if (parsed.toDate != null) UserTable.createdAt.date() lessEq parsed.toDate else null
-                sequenceOf(active, to, from).filterNotNull().reduce(Op<Boolean>::and)
+                listOfNotNull(active, to, from).compoundAnd()
             }
             .limit(parsed.pageSize, if (parsed.page != null) parsed.pageSize.toLong() * (parsed.page - 1) else 0)
             .orderBy(
@@ -58,7 +57,7 @@ class UserRepository {
                 val from =
                     if (queryParams.fromDate != null) (UserTable.createdAt.date() greaterEq queryParams.fromDate) else null
                 val to = if (queryParams.toDate != null) UserTable.createdAt.date() lessEq queryParams.toDate else null
-                sequenceOf(active, inIds, to, from).filterNotNull().reduce(Op<Boolean>::and)
+                listOfNotNull(active, inIds, to, from).compoundAnd()
             }
             .limit(
                 queryParams.pageSize,
