@@ -1,5 +1,6 @@
 package io.ktor.answers.model
 
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
@@ -36,7 +37,7 @@ sealed interface Post {
 data class Question(
     override val postId: Int,
     override val postType: PostType,
-    override val creationDate: LocalDateTime,
+    override val creationDate: Instant,
     override val lastActivityDate: LocalDateTime,
     override val lastEditDate: LocalDateTime,
     override val link: String,
@@ -55,7 +56,7 @@ data class Question(
 data class Answer(
     override val postId: Int,
     override val postType: PostType,
-    override val creationDate: LocalDateTime,
+    override val creationDate: Instant,
     override val lastActivityDate: LocalDateTime,
     override val lastEditDate: LocalDateTime,
     override val link: String,
@@ -82,7 +83,7 @@ data class User(
     val userId: Int,
     val userType: UserType,
     val displayName: String,
-    val creationDate: LocalDateTime,
+    val creationDate: Instant,
     val link: String,
     val location: String? = null,
     val aboutMe: String? = null
