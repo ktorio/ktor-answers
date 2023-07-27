@@ -42,7 +42,7 @@ class FakeQuestionRepository : QuestionRepository {
 
     override suspend fun addQuestion(newQuestionData: QuestionData): Question? {
         val maxId = questions.maxOf { it.postId }
-        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val now = Clock.System.now()
         val question = Question(
             maxId + 1,
             postType = newQuestionData.postType ?: PostType.QUESTION,

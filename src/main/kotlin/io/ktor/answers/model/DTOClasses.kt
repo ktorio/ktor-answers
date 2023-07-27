@@ -21,9 +21,9 @@ enum class UserType {
 sealed interface Post {
     val postId: Int
     val postType: PostType
-    val creationDate: LocalDateTime
-    val lastActivityDate: LocalDateTime
-    val lastEditDate: LocalDateTime
+    val creationDate: Instant
+    val lastActivityDate: Instant
+    val lastEditDate: Instant
     val link: String
     val title: String
     val body: String
@@ -38,8 +38,8 @@ data class Question(
     override val postId: Int,
     override val postType: PostType,
     override val creationDate: Instant,
-    override val lastActivityDate: LocalDateTime,
-    override val lastEditDate: LocalDateTime,
+    override val lastActivityDate: Instant,
+    override val lastEditDate: Instant,
     override val link: String,
     override val title: String,
     override val body: String,
@@ -57,8 +57,8 @@ data class Answer(
     override val postId: Int,
     override val postType: PostType,
     override val creationDate: Instant,
-    override val lastActivityDate: LocalDateTime,
-    override val lastEditDate: LocalDateTime,
+    override val lastActivityDate: Instant,
+    override val lastEditDate: Instant,
     override val link: String,
     override val title: String,
     override val body: String,
@@ -95,9 +95,9 @@ data class User(
 data class QuestionData(
     val postId: Int? = null,
     val postType: PostType? = null,
-    val creationDate: LocalDateTime? = null,
-    val lastActivityDate: LocalDateTime? = null,
-    val lastEditDate: LocalDateTime? = null,
+    val creationDate: Instant? = null,
+    val lastActivityDate: Instant? = null,
+    val lastEditDate: Instant? = null,
     val link: String? = null,
     val title: String? = null,
     val body: String? = null,
