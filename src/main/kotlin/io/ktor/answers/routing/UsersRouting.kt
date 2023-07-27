@@ -1,27 +1,40 @@
 package io.ktor.answers.routing
 
-import io.ktor.answers.db.*
-import io.ktor.answers.model.*
+import io.ktor.answers.db.postgres.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.util.pipeline.*
 
-fun Routing.usersRouting(userRepository: UserRepository) {
+fun Routing.usersRouting(userRepository: PostgresUserRepository) {
     route("/users") {
-        get { call.respond(userRepository.allUsers(querySortedBy("name"))) }
-        route(Regex("(?<ids>\\d+(,\\d+){1,1000})")) {
-            get { call.respond(userRepository.usersByIds(ids, querySortedBy("name"))) }
-            get("/comments") { call.respond(userRepository.commentsByIds(ids, querySortedBy("creation"))) }
-            get("/quesions") { call.respond(userRepository.questionsByIds(ids, querySortedBy("creation"))) }
-            get("/answers") { call.respond(userRepository.answersByIds(ids, querySortedBy("creation"))) }
+        get {
+            val queryParams = call.request.queryParameters
+            val users = userRepository.allUsers(queryParams.parsed(defaultSortField = "name"))
+            call.respond(users.map(::daoToDto))
+        }
+        route(Regex("(?<ids>\\d+(,\\d+){0,1000})")) {
+            get {
+                val ids = call.parameters["ids"]!!.split(',').map(String::toLong)
+                val queryParams = call.request.queryParameters
+                val users = userRepository.usersByIds(ids, queryParams.parsed(defaultSortField = "name"))
+                call.respond(users.map(::daoToDto))
+            }
+            get("/comments") {
+                val ids = call.parameters["ids"]!!.split(',').map(String::toLong)
+                val queryParams = call.request.queryParameters
+                call.respond(userRepository.commentsByIds(ids, queryParams.parsed(defaultSortField = "creation")))
+            }
+            get("/questions") {
+                val ids = call.parameters["ids"]!!.split(',').map(String::toLong)
+                val queryParams = call.request.queryParameters
+                call.respond(userRepository.questionsByIds(ids, queryParams.parsed(defaultSortField = "creation")))
+
+            }
+            get("/answers") {
+                val ids = call.parameters["ids"]!!.split(',').map(String::toLong)
+                val queryParams = call.request.queryParameters
+                call.respond(userRepository.answersByIds(ids, queryParams.parsed(defaultSortField = "creation")))
+            }
         }
     }
 }
-
-private fun PipelineContext<Unit, ApplicationCall>.querySortedBy(sortField: String) =
-    call.request.queryParameters.parsed(sortField)
-
-
-private val PipelineContext<Unit, ApplicationCall>.ids
-    get() = call.parameters["ids"]!!.split(',').map(String::toLong)

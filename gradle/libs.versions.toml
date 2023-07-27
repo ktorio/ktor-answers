@@ -8,19 +8,23 @@ org-jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.
 
 [versions]
 
-kotlin = "1.8.21"
+kotlin = "1.9.0"
 
-ktor = "2.3.0"
+ktor = "2.3.2"
 
 exposed = "0.41.1"
 
-testcontainers = "1.18.1"
+testcontainers = "1.18.3"
 
 [libraries]
 
 ktor-bom = { group = "io.ktor", name = "ktor-bom", version.ref = "ktor" }
 
 ktor-server-core-jvm = { group = "io.ktor", name = "ktor-server-core-jvm", version.ref = "ktor" }
+
+ktor-server-cors-jvm = { group = "io.ktor", name = "ktor-server-cors-jvm", version.ref = "ktor" }
+
+ktor-server-resources = { group = "io.ktor", name = "ktor-server-resources", version.ref = "ktor" }
 
 ktor-server-content-negotiation-jvm = { group = "io.ktor", name = "ktor-server-content-negotiation-jvm", version.ref = "ktor" }
 
@@ -42,11 +46,11 @@ exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version
 
 exposed-kotlin-datetime = { group = "org.jetbrains.exposed", name = "exposed-kotlin-datetime", version.ref = "exposed" }
 
-liquibase = "org.liquibase:liquibase-core:4.22.0"
+liquibase = "org.liquibase:liquibase-core:4.23.0"
 
 postgres = "org.postgresql:postgresql:42.6.0"
 
-kotlinx-coroutines-test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.0"
+kotlinx-coroutines-test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3"
 
 kotlin-scripting-compiler-embeddable = { group = "org.jetbrains.kotlin", name = "kotlin-scripting-compiler-embeddable", version.ref = "kotlin" }
 

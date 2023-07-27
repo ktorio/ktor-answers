@@ -1,6 +1,6 @@
 package io.ktor.answers
 
-import io.ktor.answers.db.*
+import io.ktor.answers.db.postgres.*
 import kotlinx.coroutines.test.runTest
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.selectAll
@@ -9,16 +9,20 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import kotlin.properties.Delegates.notNull
 import kotlin.random.Random
 import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
 @Testcontainers
 class DbTest : AbstractDbTest() {
-    private val userRepository = UserRepository()
+    private val userRepository = PostgresUserRepository()
+
+    @BeforeTest
+    fun startup() = clearDatabaseContents()
 
     @AfterTest
-    fun cleanup() = runTest { suspendTransaction { UserTable.deleteAll() } }
+    fun cleanup() = clearDatabaseContents()
 
     @Test
     fun `deactivated users should not be in the 'all users' response`() = runTest {
@@ -297,4 +301,7 @@ private fun UserDAO.downvote(content: Content) {
         value = -1
         this.content = content
     }
+}
+private fun clearDatabaseContents() {
+    runTest { suspendTransaction { UserTable.deleteAll() } }
 }
