@@ -1,9 +1,6 @@
 package io.ktor.answers.model.old
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.*
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -23,7 +20,7 @@ data class UserDTO(
 data class AnswerDTO(
     val id: Long,
     val text: String,
-    val createdAt: LocalDateTime,
+    val createdAt: Instant,
     val authorId: Long,
     val votes: Int
 )
@@ -33,7 +30,7 @@ data class QuestionDTO(
     val id: Long,
     val title: String,
     val text: String,
-    val createdAt: LocalDateTime,
+    val createdAt: Instant,
     val authorId: Long,
     val votes: Int
 )
@@ -42,7 +39,7 @@ data class QuestionDTO(
 data class CommentDTO(
     val value: Long,
     val text: String,
-    val createdAt: LocalDateTime,
+    val createdAt: Instant,
     val authorId: Long,
     val votes: Int
 )

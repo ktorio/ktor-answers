@@ -6,7 +6,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-fun rightNow() = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+fun rightNow() = Clock.System.now()
 
 fun daoToDto(dao: UserDAO): User {
     return User(

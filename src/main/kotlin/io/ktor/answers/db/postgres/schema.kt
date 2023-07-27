@@ -1,19 +1,18 @@
 package io.ktor.answers.db.postgres
 
-import kotlinx.datetime.toKotlinLocalDateTime
+import kotlinx.datetime.Clock
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.kotlin.datetime.datetime
-import java.time.LocalDateTime
+import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
 
 object UserTable : LongIdTable("users") {
     val name = varchar("name", 50).uniqueIndex()
     val passwordHash = varchar("password_hash", 100)
     val active = bool("active").default(false)
     val email = text("email").uniqueIndex()
-    val createdAt = datetime("created_at").clientDefault { LocalDateTime.now().toKotlinLocalDateTime() }
+    val createdAt = timestamp("created_at").clientDefault { Clock.System.now() }
     val displayName = varchar("display_name", 80).uniqueIndex()
     val location = text("location").nullable()
     val aboutMe = text("about_me").nullable()
@@ -34,7 +33,7 @@ object UserRole : Table("user_role") {
 object ContentTable : LongIdTable("content") {
     val text = text("text")
     val author = reference("author_id", UserTable, onDelete = ReferenceOption.CASCADE).index()
-    val createdAt = datetime("created_at").clientDefault { LocalDateTime.now().toKotlinLocalDateTime() }.index()
+    val createdAt = timestamp("created_at").clientDefault { Clock.System.now() }
 
 }
 
@@ -42,7 +41,7 @@ object VoteTable : LongIdTable("vote") {
     val voter = reference("voter", UserTable, onDelete = ReferenceOption.CASCADE).index()
     val content = reference("content", ContentTable, onDelete = ReferenceOption.CASCADE).index()
     val value = short("value")
-    val createdAt = datetime("created_at").clientDefault { LocalDateTime.now().toKotlinLocalDateTime() }
+    val createdAt = timestamp("created_at").clientDefault { Clock.System.now() }
 }
 
 object QuestionTable : LongIdTable("question") {

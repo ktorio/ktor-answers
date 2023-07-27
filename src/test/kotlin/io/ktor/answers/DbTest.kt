@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.testcontainers.junit.jupiter.Testcontainers
+import kotlin.properties.Delegates.notNull
 import kotlin.random.Random
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -206,6 +207,68 @@ class DbTest : AbstractDbTest() {
         assertEquals("answer2", sortedByCreation[0].text)
         assertEquals("answer1", sortedByCreation[1].text)
         assertEquals("answer3", sortedByCreation[2].text)
+    }
+
+    @Test
+    fun `question without votes should be visible`() = runTest {
+        var questionAuthor: UserDAO by notNull()
+        suspendTransaction {
+            questionAuthor = createRandomUser()
+            QuestionDAO.new {
+                title = "q1"
+                data = Content.new {
+                    text = "q1"
+                    author = questionAuthor
+                }
+            }
+        }
+        assertEquals(1, userRepository.questionsByIds(listOf(questionAuthor.id.value)).size)
+    }
+
+    @Test
+    fun `answer without votes should be visible`() = runTest {
+        var answerAuthor: UserDAO by notNull()
+        suspendTransaction {
+            val q = QuestionDAO.new {
+                title = "q1"
+                data = Content.new {
+                    text = "q1"
+                    author = createRandomUser()
+                }
+            }
+            answerAuthor = createRandomUser()
+            AnswerDAO.new {
+                data = Content.new {
+                    text = "a1"
+                    author = answerAuthor
+                }
+                question = q
+            }
+        }
+        assertEquals(1, userRepository.answersByIds(listOf(answerAuthor.id.value)).size)
+    }
+
+    @Test
+    fun `comment without votes should be visible`() = runTest {
+        var commentAuthor: UserDAO by notNull()
+        suspendTransaction {
+            val q = QuestionDAO.new {
+                title = "q1"
+                data = Content.new {
+                    text = "q1"
+                    author = createRandomUser()
+                }
+            }
+            commentAuthor = createRandomUser()
+            CommentDAO.new {
+                data = Content.new {
+                    text = "q1"
+                    author = commentAuthor
+                }
+                parent = q.data
+            }
+        }
+        assertEquals(1, userRepository.commentsByIds(listOf(commentAuthor.id.value)).size)
     }
 }
 
