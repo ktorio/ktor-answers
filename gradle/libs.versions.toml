@@ -12,7 +12,7 @@ kotlin = "1.9.0"
 
 ktor = "2.3.2"
 
-exposed = "0.41.1"
+exposed = "0.42.0"
 
 testcontainers = "1.18.3"
 
