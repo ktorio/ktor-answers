@@ -36,7 +36,7 @@ ktor-server-status-pages-jvm = { group = "io.ktor", name = "ktor-server-status-p
 
 ktor-server-netty-jvm = { group = "io.ktor", name = "ktor-server-netty-jvm", version.ref = "ktor" }
 
-logback-classic = "ch.qos.logback:logback-classic:1.4.7"
+logback-classic = "ch.qos.logback:logback-classic:1.4.11"
 
 exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed" }
 
