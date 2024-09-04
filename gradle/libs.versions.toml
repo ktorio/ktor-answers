@@ -46,7 +46,7 @@ exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version
 
 exposed-kotlin-datetime = { group = "org.jetbrains.exposed", name = "exposed-kotlin-datetime", version.ref = "exposed" }
 
-liquibase = "org.liquibase:liquibase-core:4.23.0"
+liquibase = "org.liquibase:liquibase-core:4.29.2"
 
 postgres = "org.postgresql:postgresql:42.6.0"
 
