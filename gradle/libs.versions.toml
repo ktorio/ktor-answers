@@ -48,7 +48,7 @@ exposed-kotlin-datetime = { group = "org.jetbrains.exposed", name = "exposed-kot
 
 liquibase = "org.liquibase:liquibase-core:4.23.0"
 
-postgres = "org.postgresql:postgresql:42.6.0"
+postgres = "org.postgresql:postgresql:42.7.13"
 
 kotlinx-coroutines-test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3"
 
